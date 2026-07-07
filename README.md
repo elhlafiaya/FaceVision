@@ -1,96 +1,122 @@
-# Hybrid Face Recognition System using FaceNet and Machine Learning
+# Hybrid Face Recognition using FaceNet and Support Vector Machines
 
-## Overview
-
-This repository presents a hybrid biometric authentication system for face recognition developed as part of a Master's Final Project.
-
-The proposed system combines deep facial embeddings extracted by FaceNet with a supervised Machine Learning classifier in order to improve authentication reliability compared to a traditional fixed-threshold approach.
-
-The project follows a rigorous experimental protocol based on subject-level data splitting, reproducible pair generation, and biometric evaluation metrics.
+> A reproducible biometric authentication framework combining deep facial embeddings and supervised machine learning.
 
 ---
 
-## Features
+## Abstract
 
-- Face detection and alignment using MTCNN
-- Face embedding extraction using FaceNet (512-dimensional embeddings)
-- Subject-level train/test split
-- Controlled generation of genuine and impostor pairs
-- Cosine similarity computation
-- Support Vector Machine (SVM) classifier
-- Probability calibration (Platt Scaling)
-- Automatic decision based on Equal Error Rate (EER)
-- Performance comparison with a classical threshold-based system
-- Interactive Flask web application for visualization
+Face recognition has become one of the most widely adopted biometric authentication technologies. Traditional verification systems generally rely on a fixed similarity threshold, which often struggles to generalize under varying acquisition conditions.
+
+This project proposes a hybrid biometric authentication framework that combines **FaceNet embeddings** with a **Support Vector Machine (SVM)** classifier calibrated through **Platt Scaling** to improve verification performance. Rather than relying solely on a manually selected threshold, the proposed system learns the decision boundary directly from facial similarity scores.
+
+The implementation follows a rigorous experimental protocol based on **subject-level data partitioning**, reproducible pair generation, and standardized biometric evaluation metrics.
 
 ---
 
-## Project Pipeline
+## Research Contributions
 
-Dataset
+The main contributions of this work include:
 
-↓
+- Subject-level train/test partitioning to eliminate identity leakage.
+- Reproducible generation of genuine and impostor verification pairs.
+- Deep facial representation using FaceNet.
+- Similarity-based verification using cosine distance.
+- Probability estimation through Platt-calibrated SVM.
+- Comparison with a conventional threshold-based biometric system.
+- Evaluation following ISO/IEC biometric assessment practices.
 
-Subject-Level Split
+---
 
-↓
+## System Architecture
 
-Face Detection (MTCNN)
-
-↓
-
-Face Alignment
-
-↓
-
-FaceNet Embedding Extraction
-
-↓
-
+```text
+Face Images
+      │
+      ▼
+Face Detection & Alignment (MTCNN)
+      │
+      ▼
+Image Preprocessing
+      │
+      ▼
+FaceNet
+512-D Embeddings
+      │
+      ▼
 L2 Normalization
-
-↓
-
+      │
+      ▼
 Pair Generation
-
-↓
-
-Cosine Distance Computation
-
-↓
-
-Feature Scaling
-
-↓
-
-SVM Training
-
-↓
-
-Probability Calibration
-
-↓
-
+      │
+      ▼
+Cosine Distance
+      │
+      ▼
+StandardScaler
+      │
+      ▼
+Support Vector Machine
+      │
+      ▼
+Platt Probability Calibration
+      │
+      ▼
 Authentication Decision
-
-↓
-
-Performance Evaluation
+```
 
 ---
 
-## Datasets
+## Experimental Pipeline
 
-The experiments were conducted using two publicly available datasets:
+### 1. Dataset Preparation
 
-- ORL Face Database
-- Yale Face Database
+The datasets are organized by subject identity.
 
-Both datasets were split at the subject level to guarantee that no identity appears simultaneously in the training and testing sets.
+Each identity belongs **exclusively** to either the training or testing subset.
+
+This protocol prevents data leakage and provides a more realistic biometric evaluation.
 
 ---
 
-## Machine Learning Model
+### 2. Face Detection
+
+Faces are automatically detected and aligned using **MTCNN**.
+
+Detected faces are resized to **160 × 160** pixels before embedding extraction.
+
+---
+
+### 3. Deep Feature Extraction
+
+Face representations are extracted using the pretrained **FaceNet (InceptionResnetV1)** network.
+
+Each image is converted into a normalized **512-dimensional embedding**.
+
+---
+
+### 4. Pair Construction
+
+Verification pairs are generated independently for the training and testing datasets.
+
+Two pair categories are considered:
+
+- Genuine pairs (same identity)
+- Impostor pairs (different identities)
+
+Pair generation is fully reproducible through a fixed random seed.
+
+---
+
+### 5. Similarity Computation
+
+For each verification pair, the cosine distance between embeddings is computed.
+
+This distance represents the input feature used for classification.
+
+---
+
+### 6. Machine Learning
 
 Classifier:
 
@@ -100,55 +126,62 @@ Calibration:
 
 - Platt Scaling
 
-Feature:
+Feature Scaling:
 
-- Cosine distance between FaceNet embeddings
-
-Evaluation Metrics:
-
-- Accuracy
-- FAR
-- FRR
-- EER
-- ROC Curve
-- AUC
-- DET Curve
+- StandardScaler
 
 ---
 
-## Technologies
+### 7. Decision
 
-Python
+The calibrated classifier predicts the probability that two facial embeddings belong to the same individual.
 
-PyTorch
+Authentication decisions are then derived from the learned model instead of relying on a manually selected threshold.
 
-FaceNet
+---
 
-MTCNN
+## Datasets
 
-OpenCV
+Experiments were conducted on two publicly available benchmark datasets.
 
-Scikit-learn
+| Dataset | Purpose |
+|----------|----------|
+| ORL Face Database | Controlled facial verification |
+| Yale Face Database | Illumination robustness evaluation |
 
-NumPy
+---
 
-Pandas
+## Evaluation Metrics
 
-Matplotlib
+Performance is evaluated using classical biometric verification metrics:
 
-Flask
-
-Joblib
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- False Acceptance Rate (FAR)
+- False Rejection Rate (FRR)
+- Equal Error Rate (EER)
+- ROC Curve
+- Area Under the Curve (AUC)
+- DET Curve
 
 ---
 
 ## Repository Structure
 
 ```
-.
+Hybrid-Face-Recognition/
+│
 ├── datasets/
 │
 ├── notebooks/
+│   ├── 01_Preprocessing.ipynb
+│   ├── 02_EmbeddingExtraction.ipynb
+│   ├── 03_PairGeneration.ipynb
+│   ├── 04_Baseline.ipynb
+│   ├── 05_SVM.ipynb
+│   └── 06_Evaluation.ipynb
 │
 ├── models/
 │
@@ -160,51 +193,81 @@ Joblib
 │
 ├── figures/
 │
-├── README.md
+├── requirements.txt
 │
-└── requirements.txt
+├── LICENSE
+│
+└── README.md
 ```
 
 ---
 
-## Experimental Protocol
+## Software Stack
 
-The implementation follows several good practices:
+- Python
+- PyTorch
+- FaceNet
+- facenet-pytorch
+- OpenCV
+- NumPy
+- Pandas
+- Scikit-learn
+- Matplotlib
+- Flask
+- Joblib
 
-- subject-level train/test split
-- reproducible random seed
+---
+
+## Reproducibility
+
+The implementation has been designed to maximize experimental reproducibility.
+
+Key reproducibility measures include:
+
+- fixed random seed
+- subject-level partitioning
 - independent train/test pair generation
-- balanced genuine/impostor pairs
+- deterministic preprocessing
 - standardized feature scaling
-- calibrated probability estimation
-- evaluation following biometric recognition standards
+- serialized trained models
 
 ---
 
-## Results
+## Future Work
 
-The proposed hybrid approach demonstrates improved authentication performance compared to a classical fixed-threshold decision by reducing both False Acceptance Rate (FAR) and False Rejection Rate (FRR) while maintaining a low Equal Error Rate (EER).
+Potential research directions include:
+
+- ArcFace embeddings
+- MagFace
+- AdaFace
+- Quality-aware biometric verification
+- Open-set face recognition
+- Deep metric learning
+- Domain adaptation
+- Multimodal biometric authentication
+
+---
+
+## References
+
+1. Schroff F., Kalenichenko D., Philbin J.
+   FaceNet: A Unified Embedding for Face Recognition and Clustering.
+   CVPR 2015.
+
+2. Taigman Y. et al.
+   DeepFace.
+   CVPR 2014.
+
+3. Deng J. et al.
+   ArcFace.
+   CVPR 2019.
+
+4. ISO/IEC 19795-1
+   Biometric Performance Testing and Reporting.
 
 ---
 
-## Citation
-
-If you use this repository, please cite:
-
-Master's Final Project
-
-Hybrid Face Recognition System using FaceNet and Machine Learning
-
-Faculty of Sciences
-
-Mohammed V University
-
-Morocco
-
-2026
-
----
 
 ## License
 
-This project is released for academic and research purposes.
+Released for academic and research purposes.
