@@ -168,39 +168,6 @@ Performance is evaluated using classical biometric verification metrics:
 
 ---
 
-## Repository Structure
-
-```
-Hybrid-Face-Recognition/
-│
-├── datasets/
-│
-├── notebooks/
-│   ├── 01_Preprocessing.ipynb
-│   ├── 02_EmbeddingExtraction.ipynb
-│   ├── 03_PairGeneration.ipynb
-│   ├── 04_Baseline.ipynb
-│   ├── 05_SVM.ipynb
-│   └── 06_Evaluation.ipynb
-│
-├── models/
-│
-├── embeddings/
-│
-├── app/
-│
-├── results/
-│
-├── figures/
-│
-├── requirements.txt
-│
-├── LICENSE
-│
-└── README.md
-```
-
----
 
 ## Software Stack
 
