@@ -1,148 +1,125 @@
 # Hybrid Face Recognition System using FaceNet and Machine Learning
 
-> Master's Final Project – Computer Science  
+> **Master's Final Project – Computer Science**
 > Faculty of Sciences, Mohammed V University – Rabat, Morocco
 
 ---
 
 ## Overview
 
-This repository presents a complete hybrid biometric authentication system based on deep learning and machine learning.
+This repository presents a hybrid face recognition system that combines deep facial representations with supervised machine learning for biometric authentication.
 
-The project includes:
+The objective of this project is to investigate whether a learning-based decision model can improve face verification performance compared with a conventional similarity-threshold approach.
 
-- Face detection and alignment using MTCNN.
-- Face embedding extraction using FaceNet (512-dimensional embeddings).
-- Subject-level train/test split.
-- Controlled generation of genuine and impostor pairs.
-- Cosine distance computation.
-- Support Vector Machine (SVM) classifier with Platt probability calibration.
-- Performance evaluation using biometric metrics.
-- Interactive Flask web application for authentication and visualization.
-
-The implementation follows a reproducible experimental protocol suitable for academic research.
+The proposed framework integrates FaceNet for facial feature extraction and a calibrated Support Vector Machine (SVM) for authentication decision-making. A Flask-based web application is also provided to demonstrate the complete authentication workflow through an interactive interface.
 
 ---
 
+## Main Features
 
-## Research Pipeline
+* Face detection and alignment using MTCNN
+* Deep facial embedding extraction with FaceNet
+* Subject-level train/test partitioning
+* Controlled generation of genuine and impostor verification pairs
+* Cosine-distance based facial comparison
+* Probability estimation using a calibrated Support Vector Machine
+* Comparison with a conventional threshold-based verification system
+* Interactive web application for visualization and authentication
 
-```
+---
+
+## Research Methodology
+
+The experimental workflow consists of the following stages:
+
+```text
 Face Images
       │
       ▼
-Face Detection (MTCNN)
+Face Detection and Alignment (MTCNN)
       │
       ▼
-Face Alignment
+FaceNet Embedding Extraction
       │
       ▼
-FaceNet
-512-D Embeddings
+Embedding Normalization
       │
       ▼
-L2 Normalization
+Verification Pair Generation
       │
       ▼
-Pair Generation
+Cosine Distance Computation
       │
       ▼
-Cosine Distance
-      │
-      ▼
-StandardScaler
+Feature Standardization
       │
       ▼
 Support Vector Machine
       │
       ▼
-Platt Scaling
+Probability Calibration
       │
       ▼
 Authentication Decision
 ```
 
----
-
-## Web Platform
-
-The repository also includes a Flask-based web application that allows:
-
-- dataset exploration
-- image visualization
-- authentication simulation
-- prediction confidence visualization
-- biometric performance display
-- comparison between baseline and SVM approaches
+The entire pipeline was designed to ensure reproducibility through subject-level data partitioning, independent pair generation, deterministic preprocessing, and calibrated probabilistic prediction.
 
 ---
 
 ## Datasets
 
-Experiments were conducted using:
+Experimental validation was conducted using two publicly available benchmark datasets:
 
-- ORL Face Database
-- Yale Face Database
+* ORL Face Database
+* Yale Face Database
 
-The datasets are public research datasets.
-
-Due to GitHub storage limitations, the datasets are **not included** in this repository.
+To keep the repository lightweight, the original datasets are not distributed with this project.
 
 ---
 
-## Experimental Protocol
+## Evaluation
 
-The implementation follows good scientific practices:
+The proposed approach is evaluated using standard biometric verification metrics, including:
 
-- subject-level train/test split
-- reproducible random seed
-- independent pair generation
-- no identity leakage
-- calibrated probability estimation
-- standardized preprocessing
-
----
-
-## Evaluation Metrics
-
-The following metrics are reported:
-
-- Accuracy
-- Precision
-- Recall
-- F1-score
-- FAR
-- FRR
-- EER
-- ROC Curve
-- AUC
-- DET Curve
+* Accuracy
+* Precision
+* Recall
+* F1-score
+* False Acceptance Rate (FAR)
+* False Rejection Rate (FRR)
+* Equal Error Rate (EER)
+* ROC Curve
+* Area Under the Curve (AUC)
+* Detection Error Tradeoff (DET) Curve
 
 ---
 
 ## Technologies
 
-- Python
-- PyTorch
-- FaceNet
-- facenet-pytorch
-- OpenCV
-- NumPy
-- Pandas
-- Scikit-learn
-- Flask
-- Matplotlib
-- Joblib
+* Python
+* PyTorch
+* FaceNet (InceptionResnetV1)
+* facenet-pytorch
+* OpenCV
+* NumPy
+* Pandas
+* Scikit-learn
+* Flask
+* Matplotlib
+* Joblib
 
 ---
 
-## Installation
+## Getting Started
+
+Install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run the web application:
+Launch the web application:
 
 ```bash
 python app.py
@@ -150,10 +127,8 @@ python app.py
 
 ---
 
+## Notice
 
+This repository is shared exclusively for academic reading and evaluation purposes.
 
-## Copyright
-
-© 2026Author
-
-All Rights Reserved.
+Please do not copy, modify, redistribute, or reuse any part of this project without prior permission from the author.
