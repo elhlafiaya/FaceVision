@@ -1,1 +1,14 @@
+flask>=2.3.0
+scikit-learn>=1.3.0
+opencv-python-headless>=4.8.0
+numpy>=1.24.0
+pandas>=2.0.0
+joblib>=1.3.0
+Pillow>=9.0.0
+tqdm>=4.65.0
+scipy>=1.10.0
 
+# Requis pour prepare_data.py (extraction FaceNet/MTCNN) et l'upload d'image
+# arbitraire sur la page Test. Installer separement (CPU) :
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#   pip install facenet-pytorch
