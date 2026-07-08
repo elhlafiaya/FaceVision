@@ -1,0 +1,28 @@
+{
+  "dataset": "Yale",
+  "model": "SVM RBF |e1-e2| 512D + Calibration Platt",
+  "auc": 1.0,
+  "eer": 0.0,
+  "eer_threshold": 0.05649012546158596,
+  "far": 0.0,
+  "frr": 0.0,
+  "accuracy": 1.0,
+  "cv_auc_mean": 1.0,
+  "cv_auc_std": 0.0,
+  "brier_score": 0.009375844863328257,
+  "ece": 0.03628154486622088,
+  "best_C": 0.1,
+  "best_gamma": "scale",
+  "margin": 0.15,
+  "tlow": 0.05,
+  "thigh": 0.20649012546158596,
+  "n_train": 880,
+  "n_test": 770,
+  "feature_dim": 512,
+  "zones": {
+    "accepte": 383,
+    "incertain": 3,
+    "rejete": 384,
+    "total": 770
+  }
+}
