@@ -24,32 +24,6 @@ The implementation follows a reproducible experimental protocol suitable for aca
 
 ---
 
-## Repository Structure
-
-```
-Hybrid-Face-Recognition/
-│
-├── README.md
-├── LICENSE
-├── requirements.txt
-├── app.py
-│
-├── notebooks/
-│
-├── scripts/
-│
-├── models/
-│
-├── figures/
-│
-├── platform/
-│
-├── results/
-│
-└── data/
-```
-
----
 
 ## Research Pipeline
 
