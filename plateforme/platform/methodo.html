@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Méthodologie — FaceVision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body{background:var(--obsidian);color:var(--cream);padding-top:var(--nav-h)}
+.page-hero{padding:3.5rem 3rem 2.5rem;border-bottom:1px solid rgba(212,175,55,.08);background:linear-gradient(135deg,rgba(212,175,55,.03) 0%,transparent 60%)}
+.page-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.2rem);font-weight:700}
+.page-sub{font-size:13px;color:rgba(212,175,55,.4);margin-top:.5rem}
+.flow-section{padding:3.5rem 3rem}
+.flow-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:3rem;align-items:start}
+.flow-steps{display:flex;flex-direction:column;gap:0}
+.flow-node{display:flex;gap:1.2rem;padding:1.4rem 1.2rem;cursor:pointer;border-left:3px solid rgba(212,175,55,.08);transition:var(--transition)}
+.flow-node:hover,.flow-node.active-flow{border-left-color:var(--gold);background:rgba(212,175,55,.04)}
+.flow-node.active-flow .flow-node-num{background:var(--gold);color:#2A2418;border-color:var(--gold)}
+.flow-node-num{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(212,175,55,.15);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;color:var(--gold);flex-shrink:0;transition:var(--transition)}
+.flow-node-info{flex:1}
+.flow-node-title{font-size:14px;font-weight:600;color:var(--cream);margin-bottom:3px}
+.flow-node-sub{font-size:12px;color:rgba(212,175,55,.4);font-family:var(--font-mono)}
+.flow-connector{width:3px;height:20px;background:rgba(212,175,55,.08);margin-left:32px}
+.flow-detail{background:rgba(255,255,255,.025);border:1px solid rgba(212,175,55,.08);border-radius:16px;padding:2rem;min-height:300px;position:sticky;top:90px}
+.flow-detail-title{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--cream);margin-bottom:1rem}
+#flow-detail-text{font-size:13px;line-height:1.8;color:rgba(212,175,55,.65)}
+.arch-section{background:rgba(255,255,255,.015);border-top:1px solid rgba(212,175,55,.06);border-bottom:1px solid rgba(212,175,55,.06);padding:3.5rem 3rem}
+.arch-title{font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:.5rem}
+.arch-sub{font-size:13px;color:rgba(212,175,55,.4);margin-bottom:2.5rem}
+.arch-flow{display:flex;align-items:center;gap:0;flex-wrap:nowrap;overflow-x:auto;padding-bottom:1rem}
+.arch-block{background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.1);border-radius:12px;padding:1.2rem .9rem;min-width:130px;text-align:center;flex-shrink:0;transition:var(--transition)}
+.arch-block:hover{border-color:rgba(212,175,55,.3);transform:translateY(-3px)}
+.arch-arrow{color:rgba(212,175,55,.4);font-size:18px;padding:0 8px;flex-shrink:0}
+.arch-block-icon{font-size:1.6rem;margin-bottom:.4rem}
+.arch-block-name{font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--gold);margin-bottom:.3rem;letter-spacing:1px}
+.arch-block-sub{font-size:10px;color:rgba(212,175,55,.4);line-height:1.4}
+.feature-section{padding:3.5rem 3rem}
+.feat-title{font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:.5rem}
+.feat-sub{font-size:13px;color:rgba(212,175,55,.4);margin-bottom:2rem}
+.feat-comparison{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+.fc-card{background:var(--obsidian-light);border-radius:14px;padding:1.5rem;border:1px solid rgba(212,175,55,.1)}
+.fc-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem}
+.fc-title{font-size:1rem;font-weight:700;margin-bottom:.6rem}
+.fc-desc{font-size:12px;color:rgba(212,175,55,.5);line-height:1.7}
+.fc-strike{opacity:.4;text-decoration:line-through}
+.fc-highlight{border-color:rgba(76,175,124,.3);background:rgba(76,175,124,.03)}
+.math-box{background:var(--obsidian);border:1px solid rgba(212,175,55,.1);border-radius:10px;padding:1rem 1.5rem;font-family:var(--font-mono);font-size:13px;color:var(--gold);margin:1.2rem 0;line-height:1.8}
+.decision-section{padding:3.5rem 3rem;background:rgba(255,255,255,.01)}
+.decision-zones{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-top:1.5rem}
+.dz-card{border-radius:14px;padding:1.8rem;border:1px solid;text-align:center}
+.dz-icon{font-size:2.5rem;margin-bottom:.8rem}
+.dz-title{font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:.5rem}
+.dz-cond{font-family:var(--font-mono);font-size:11px;margin-bottom:.6rem;opacity:.7}
+.dz-desc{font-size:12px;line-height:1.7;opacity:.7}
+.eval-section{padding:3.5rem 3rem}
+.eval-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1.5rem}
+.eval-card{background:var(--obsidian-light);border-radius:12px;padding:1.3rem;border:1px solid rgba(212,175,55,.1)}
+.eval-name{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.eval-desc{font-size:12px;color:rgba(212,175,55,.55);line-height:1.6}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="index.html"><div class="nav-logo-icon">👁</div><div><span class="nav-logo-text">FaceVision</span><span class="nav-logo-sub">Biometric Platform</span></div></a>
+  <ul class="nav-links">
+    <li><a class="nav-link-btn" href="index.html">Accueil</a></li>
+    <li><a class="nav-link-btn" href="modeles.html">Modèles</a></li>
+    <li><a class="nav-link-btn" href="resultats.html">Résultats</a></li>
+    <li><a class="nav-link-btn active-nav" href="methodo.html">Méthodo</a></li>
+    <li><a class="nav-link-btn" href="apropos.html">À propos</a></li>
+    <li><a class="nav-cta" href="test.html">▶ Tester</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;opacity:.6">Méthodologie</div>
+  <div class="page-title">Pipeline Scientifique</div>
+  <div class="page-sub">Split 50/50 Stratifié · FaceNet 512D · |e₁−e₂| · SVM RBF + Platt · Décision Ternaire · Standards ISO/IEC 19795-1</div>
+</div>
+
+<!-- PIPELINE STEPS -->
+<section class="flow-section">
+  <div class="flow-grid">
+    <div class="flow-steps">
+      <div class="flow-node active-flow" onclick="showDetail(0, this)">
+        <div class="flow-node-num">01</div>
+        <div class="flow-node-info"><div class="flow-node-title">Split 50/50 Stratifié par Identité</div><div class="flow-node-sub">Reproductible · SEED=42 · Variance EER minimale</div></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node" onclick="showDetail(1, this)">
+        <div class="flow-node-num">02</div>
+        <div class="flow-node-info"><div class="flow-node-title">Prétraitement Image + CLAHE</div><div class="flow-node-sub">Normalisation éclairage · resize 160×160</div></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node" onclick="showDetail(2, this)">
+        <div class="flow-node-num">03</div>
+        <div class="flow-node-info"><div class="flow-node-title">MTCNN — Détection & Alignement</div><div class="flow-node-sub">Landmarks oculaires · correction rotation · fallback documenté</div></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node" onclick="showDetail(3, this)">
+        <div class="flow-node-num">04</div>
+        <div class="flow-node-info"><div class="flow-node-title">FaceNet InceptionResnetV1</div><div class="flow-node-sub">VGGFace2 pré-entraîné · 512D · normalisation L2</div></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node" onclick="showDetail(4, this)">
+        <div class="flow-node-num">05</div>
+        <div class="flow-node-info"><div class="flow-node-title">Feature Engineering : |e₁−e₂| ∈ ℝ⁵¹²</div><div class="flow-node-sub">Différence absolue · invariant à l'ordre · 512 dimensions</div></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node" onclick="showDetail(5, this)">
+        <div class="flow-node-num">06</div>
+        <div class="flow-node-info"><div class="flow-node-title">SVM RBF + Calibration Platt</div><div class="flow-node-sub">GridSearchCV · 5-fold CV stratifiée · P(genuine) calibré</div></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node" onclick="showDetail(6, this)">
+        <div class="flow-node-num">07</div>
+        <div class="flow-node-info"><div class="flow-node-title">Décision Ternaire + Évaluation ISO</div><div class="flow-node-sub">ACCEPTÉ / INCERTAIN / REJETÉ · DET · d-prime · ECE · Brier</div></div>
+      </div>
+    </div>
+    <div class="flow-detail" id="flow-detail-panel">
+      <div class="flow-detail-title" id="flow-detail-title">Split 50/50 Stratifié</div>
+      <div id="flow-detail-text"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch-section">
+  <div class="arch-title">Architecture du Système</div>
+  <div class="arch-sub">Vue complète du pipeline de vérification faciale — de l'image brute à la décision ternaire</div>
+  <div class="arch-flow">
+    <div class="arch-block"><div class="arch-block-icon">🖼</div><div class="arch-block-name">Image Brute</div><div class="arch-block-sub">ORL PGM / Yale GIF/PGM</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block"><div class="arch-block-icon">🔀</div><div class="arch-block-name">Split 50/50</div><div class="arch-block-sub">Par identité · SEED=42</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block"><div class="arch-block-icon">⚙️</div><div class="arch-block-name">CLAHE</div><div class="arch-block-sub">LAB canal L · 160×160</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block"><div class="arch-block-icon">🎯</div><div class="arch-block-name">MTCNN</div><div class="arch-block-sub">Détection + alignement facial</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block" style="border-color:rgba(155,126,200,.3)"><div class="arch-block-icon">🧬</div><div class="arch-block-name">FaceNet 512D</div><div class="arch-block-sub">InceptionResnetV1 VGGFace2</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block" style="border-color:rgba(76,175,124,.3)"><div class="arch-block-icon">🔢</div><div class="arch-block-name">|e₁−e₂|</div><div class="arch-block-sub">512 dimensions · normalisé</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block"><div class="arch-block-icon">📏</div><div class="arch-block-name">StandardScaler</div><div class="arch-block-sub">Requis avant SVM 512D</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block" style="border-color:rgba(212,175,55,.3)"><div class="arch-block-icon">⚡</div><div class="arch-block-name">SVM RBF</div><div class="arch-block-sub">+ Calibration Platt</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-block" style="border-color:rgba(212,168,55,.4);background:rgba(212,175,55,.05)"><div class="arch-block-icon">🎯</div><div class="arch-block-name">P(genuine)</div><div class="arch-block-sub">Décision Ternaire</div></div>
+  </div>
+</section>
+
+<!-- FEATURE ENGINEERING -->
+<section class="feature-section">
+  <div class="feat-title">Feature Engineering : le choix clé</div>
+  <div class="feat-sub">Pourquoi |e₁−e₂| ∈ ℝ⁵¹² et pas la distance cosine seule</div>
+  <div class="feat-comparison">
+    <div class="fc-card fc-strike">
+      <div class="fc-label" style="color:var(--danger)">❌ Approche Naïve</div>
+      <div class="fc-title">Distance cosine seule</div>
+      <div class="fc-desc">1 seule valeur scalaire — perte d'information massive. Le SVM apprend à seuiller une dimension unique, équivalent à la baseline. Aucune information sur quelles composantes de l'embedding diffèrent.</div>
+    </div>
+    <div class="fc-card fc-highlight">
+      <div class="fc-label" style="color:var(--success)">✅ Approche Retenue</div>
+      <div class="fc-title">|e₁−e₂| ∈ ℝ⁵¹²</div>
+      <div class="fc-desc">512 valeurs — chaque dimension i capture l'écart sur la i-ème composante discriminante FaceNet. Le SVM apprend quelles dimensions sont importantes, lesquelles sont du bruit. Invariant à l'ordre des paires.</div>
+    </div>
+  </div>
+  <div class="math-box">
+    X = |e₁ − e₂|  ∈ ℝ⁵¹²&nbsp;&nbsp;&nbsp;&nbsp;(différence absolue, invariante à l'ordre)<br>
+    e_i ∈ ℝ⁵¹² normalisé L2 : ||e_i||₂ = 1&nbsp;&nbsp;&nbsp;&nbsp;(FaceNet InceptionResnetV1 VGGFace2)<br>
+    Xᵢ = |e₁ᵢ − e₂ᵢ|&nbsp;&nbsp;&nbsp;&nbsp;∀ i ∈ {1, ..., 512}<br>
+    → StandardScaler(X) → SVM RBF avec kernel K(x,x') = exp(-γ||x−x'||²)
+  </div>
+</section>
+
+<!-- ZONES DE DÉCISION -->
+<section class="decision-section">
+  <div style="padding:0 3rem 0 3rem">
+    <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:.5rem">Décision Ternaire</div>
+    <div style="font-size:13px;color:rgba(212,175,55,.4);margin-bottom:.3rem">Du binaire rigide au niveau de confiance explicite</div>
+    <div class="decision-zones">
+      <div class="dz-card" style="border-color:rgba(76,175,124,.3);background:rgba(76,175,124,.04)">
+        <div class="dz-icon">✅</div>
+        <div class="dz-title" style="color:var(--success)">ACCEPTÉ</div>
+        <div class="dz-cond" style="color:var(--success)">P(genuine) ≥ T<sub>high</sub> = seuil + 0.15</div>
+        <div class="dz-desc">Décision automatique positive. Le niveau de confiance dépasse largement le seuil EER. Genuine attendu avec haute certitude.</div>
+      </div>
+      <div class="dz-card" style="border-color:rgba(212,175,55,.4);background:rgba(212,175,55,.04)">
+        <div class="dz-icon">⚠️</div>
+        <div class="dz-title" style="color:var(--gold)">INCERTAIN</div>
+        <div class="dz-cond" style="color:var(--gold)">T<sub>low</sub> ≤ P(genuine) &lt; T<sub>high</sub></div>
+        <div class="dz-desc">Alerte explicite — décision suspendue. Zone de chevauchement réel des distributions. Vérification secondaire recommandée (second facteur, contrôle humain).</div>
+      </div>
+      <div class="dz-card" style="border-color:rgba(199,91,91,.3);background:rgba(199,91,91,.04)">
+        <div class="dz-icon">❌</div>
+        <div class="dz-title" style="color:var(--danger)">REJETÉ</div>
+        <div class="dz-cond" style="color:var(--danger)">P(genuine) &lt; T<sub>low</sub> = seuil − 0.15</div>
+        <div class="dz-desc">Décision automatique négative. Score bien en dessous du seuil EER. Impostor attendu avec haute certitude.</div>
+      </div>
+    </div>
+    <div class="math-box" style="margin-top:1.5rem">
+      T<sub>low</sub>  = EER_threshold − 0.15&nbsp;&nbsp;&nbsp;&nbsp;(zone de rejet clair)<br>
+      T<sub>high</sub> = EER_threshold + 0.15&nbsp;&nbsp;&nbsp;&nbsp;(zone d'acceptation claire)<br>
+      Zone INCERTAIN : T<sub>low</sub> ≤ P(genuine) &lt; T<sub>high</sub>&nbsp;&nbsp;&nbsp;&nbsp;(coïncide avec le chevauchement statistique)
+    </div>
+    <div style="font-size:12px;color:rgba(212,175,55,.45);line-height:1.8;margin-top:1rem"><strong style="color:rgba(212,175,55,.7)">Justification (Cellule 15 du notebook) :</strong> La zone d'incertitude n'est pas arbitraire — elle est positionnée exactement là où les distributions genuine/impostor se chevauchent encore. Sur ORL : 2.6% de paires INCERTAIN (46/1800) ; sur Yale : 0.4% (3/770). Les erreurs (FA/FR) du seuil fixe qui tombent dans cette zone deviennent des alertes explicites plutôt que des décisions silencieuses.</div>
+  </div>
+</section>
+
+<!-- ÉVALUATION -->
+<section class="eval-section">
+  <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:.5rem">Évaluation — Standards ISO/IEC 19795-1</div>
+  <div style="font-size:13px;color:rgba(212,175,55,.4);margin-bottom:2rem">Au-delà d'AUC/EER — mesurer la qualité de la confiance elle-même</div>
+  <div class="eval-grid">
+    <div class="eval-card"><div class="eval-name">AUC ROC</div><div class="eval-desc">Aire sous la courbe ROC — capacité discriminante globale du classifieur.</div></div>
+    <div class="eval-card"><div class="eval-name">EER (Equal Error Rate)</div><div class="eval-desc">Taux d'erreur où FAR = FRR. Métrique standard biométrie. Seuil EER = point d'équilibre.</div></div>
+    <div class="eval-card"><div class="eval-name">FAR / FRR</div><div class="eval-desc">Faux Acceptés (imposteurs acceptés) / Faux Rejetés (genuines rejetés) au seuil EER.</div></div>
+    <div class="eval-card"><div class="eval-name">DET Curve</div><div class="eval-desc">Detection Error Tradeoff — échelle normale : linéarise les courbes FAR vs FRR pour comparer les systèmes.</div></div>
+    <div class="eval-card"><div class="eval-name">d' (d-prime)</div><div class="eval-desc">Indice de discriminabilité : séparation en σ entre les distributions genuine/impostor. d' > 4.9 mesuré.</div></div>
+    <div class="eval-card"><div class="eval-name">ECE (Expected Calibration Error)</div><div class="eval-desc">Écart moyen pondéré confiance ↔ fréquence réelle. Valide que P(genuine)=0.7 → ~70% genuine.</div></div>
+    <div class="eval-card"><div class="eval-name">Brier Score</div><div class="eval-desc">Erreur quadratique moyenne entre P(genuine) et label réel. 0 = parfait. Mesure calibration globale.</div></div>
+    <div class="eval-card"><div class="eval-name">5-Fold CV Stratifiée</div><div class="eval-desc">Cross-validation stratifiée sur les paires d'entraînement. Rapporte AUC mean ± std pour estimer la variance.</div></div>
+    <div class="eval-card"><div class="eval-name">Reliability Diagram</div><div class="eval-desc">Diagramme de fiabilité (Fig A) : confiance prédite vs fréquence observée bin par bin. Vérifie la calibration Platt visuellement.</div></div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid rgba(212,175,55,.08);padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center">
+  <div style="font-family:var(--font-mono);font-size:11px;color:rgba(212,175,55,.3)">FaceVision · Méthodologie · SVM RBF |e₁−e₂| 512D</div>
+  <div style="display:flex;gap:1.5rem">
+    <a href="resultats.html" style="color:rgba(212,175,55,.4);text-decoration:none;font-size:12px">Résultats →</a>
+    <a href="test.html" style="color:rgba(212,175,55,.4);text-decoration:none;font-size:12px">Tester →</a>
+  </div>
+</footer>
+
+<script>
+const details = [
+  {
+    title: "Split 50/50 Stratifié par Identité",
+    text: `<strong style="color:var(--cream)">Justification :</strong> Sur petits datasets (ORL=400 imgs, Yale=165 imgs), le split 50/50 donne une variance EER ~2× plus faible qu'un split 80/20 classique. Chaque identité contribue exactement la moitié de ses images au train et l'autre moitié au test — garantissant qu'aucune identité n'est absente du test.<br><br>
+<strong style="color:var(--cream)">Implémentation :</strong> <code>split_dataset_5050(raw_dir, split_dir, seed=42)</code> — reproductible via SEED fixe. Pour Yale, une étape préalable convertit les formats GIF/PGM sans extension en PNG (Pillow robuste aux magic bytes non-standard).<br><br>
+<strong style="color:var(--cream)">Résultat :</strong> ORL : 40 sujets × 5 train + 5 test. Yale : 15 sujets × ~5-6 train + ~5-6 test (selon parité). Estimation robuste des métriques biométriques grâce à un test set large.`
+  },
+  {
+    title: "Prétraitement Image + CLAHE",
+    text: `<strong style="color:var(--cream)">Lecture robuste :</strong> <code>np.fromfile(path, dtype=uint8)</code> + imdecode (évite les problèmes de chemins non-ASCII). Fallback Pillow/imageio pour PGM 16-bit et GIF Yale.<br><br>
+<strong style="color:var(--cream)">CLAHE (Contrast Limited Adaptive Histogram Equalization) :</strong> appliqué sur le canal L de l'espace LAB pour normaliser l'éclairage sans toucher la chrominance. clipLimit=2.0, tileGridSize=(4,4) — paramètres optimisés pour les bases frontales contrôlées ORL/Yale.<br><br>
+<strong style="color:var(--cream)">Resize :</strong> 160×160 px (taille attendue par FaceNet InceptionResnetV1). Interpolation bicubique pour préserver les détails.`
+  },
+  {
+    title: "MTCNN — Détection & Alignement Facial",
+    text: `<strong style="color:var(--cream)">MTCNN (Multi-Task Cascaded CNN) :</strong> détecte le visage et les 5 landmarks faciaux (yeux, nez, bouche). L'alignement corrige la rotation en calculant l'angle entre les deux yeux via <code>arctan2(Δy_yeux, Δx_yeux)</code>.<br><br>
+<strong style="color:var(--cream)">Fallback documenté :</strong> Si MTCNN ne détecte pas de visage (images basse résolution, fond neutre), l'image entière est utilisée après resize. Ce comportement est attendu sur ORL/Yale (bases frontales contrôlées) et explicitement journalisé — pas masqué.<br><br>
+<strong style="color:var(--cream)">Paramètres :</strong> <code>min_face_size=20, thresholds=[0.5,0.6,0.6]</code> — seuils abaissés pour capturer les petits visages des bases académiques.`
+  },
+  {
+    title: "FaceNet InceptionResnetV1 — 512D normalisé L2",
+    text: `<strong style="color:var(--cream)">Modèle :</strong> InceptionResnetV1 pré-entraîné sur VGGFace2 (3.3M images, 9131 identités). Extracteur de caractéristiques figé — pas de fine-tuning sur ORL/Yale.<br><br>
+<strong style="color:var(--cream)">Préparation de l'image :</strong> BGR → RGB, recentrage [-1,1] : (pixel − 127.5) / 128.0. Tenseur (1,3,160,160).<br><br>
+<strong style="color:var(--cream)">Normalisation L2 :</strong> <code>e = e / ||e||₂</code> — garantit que la distance cosine et le produit scalaire sont équivalents (dot product de deux vecteurs L2-normalisés = cosine similarity). Dim. finale : ℝ⁵¹².`
+  },
+  {
+    title: "Feature Engineering : |e₁−e₂| ∈ ℝ⁵¹²",
+    text: `<strong style="color:var(--cream)">Formule :</strong> <code>X = np.abs(e1 - e2)</code> — différence absolue composante par composante des deux embeddings FaceNet normalisés L2.<br><br>
+<strong style="color:var(--cream)">Propriétés clés :</strong><br>
+• <strong>Invariance à l'ordre</strong> : |e₁−e₂| = |e₂−e₁| — la paire (A,B) et (B,A) produisent le même vecteur feature.<br>
+• <strong>Richesse informationnelle</strong> : 512 valeurs vs 1 pour la distance cosine. Le SVM apprend quelles dimensions discriminent genuine/impostor.<br>
+• <strong>Compacité</strong> : plus compact que la concaténation [e₁, e₂] (1024D), tout en capturant la différence locale entre visages.<br><br>
+<strong style="color:var(--cream)">Normalisation :</strong> StandardScaler indispensable avant SVM en haute dimension — chaque dimension de |e₁−e₂| est centrée et réduite sur le train set.`
+  },
+  {
+    title: "SVM RBF + Calibration Platt",
+    text: `<strong style="color:var(--cream)">GridSearchCV :</strong> grid {C:[0.1,1,10,100], γ:['scale','auto',0.001,0.01]}, scoring=AUC, cv=5, n_jobs=-1. Sélectionne les meilleurs hyperparamètres sur le train set.<br><br>
+<strong style="color:var(--cream)">5-Fold Cross-Validation Stratifiée :</strong> sur les paires d'entraînement, rapporte AUC mean ± std pour estimer la variance de généralisation.<br><br>
+<strong style="color:var(--cream)">Calibration Platt-Sigmoid :</strong> <code>CalibratedClassifierCV(SVC(...), method='sigmoid', cv=5)</code>. Transforme le score brut f(x) en P(genuine) ∈ [0,1] via sigmoid(A·f(x)+B). Validée par le Reliability Diagram (Fig A) et ECE quantitatif (Cellule 17).`
+  },
+  {
+    title: "Décision Ternaire + Évaluation ISO",
+    text: `<strong style="color:var(--cream)">Décision ternaire :</strong><br>
+• P(genuine) ≥ T<sub>high</sub> = seuil + 0.15 → <span style="color:var(--success)">ACCEPTÉ</span><br>
+• T<sub>low</sub> ≤ P(genuine) &lt; T<sub>high</sub> → <span style="color:var(--gold)">INCERTAIN</span><br>
+• P(genuine) &lt; T<sub>low</sub> = seuil − 0.15 → <span style="color:var(--danger)">REJETÉ</span><br><br>
+<strong style="color:var(--cream)">Évaluation complète :</strong> AUC, EER, FAR, FRR, DET curve, d' (d-prime ≈ 5.16 ORL / 5.49 Yale), Decidability Index, Brier Score, ECE.<br><br>
+<strong style="color:var(--cream)">Analyse des erreurs :</strong> les faux acceptés / faux rejetés du seuil fixe sont tracés paire par paire. Sur ORL, le seuil fixe commet 15 erreurs (9 faux rejets + 6 faux acceptés) ; 60% (9/15) sont reclassées INCERTAIN par le SVM, 33% restent erronées avec confiance et 7% sont corrigées. Sur Yale, le seuil fixe ne commet aucune erreur sur ce test set — erreurs silencieuses → alertes explicites.`
+  }
+];
+
+function showDetail(i, el) {
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('active-flow'));
+  el.classList.add('active-flow');
+  document.getElementById('flow-detail-title').textContent = details[i].title;
+  document.getElementById('flow-detail-text').innerHTML = details[i].text;
+}
+// init
+showDetail(0, document.querySelector('.flow-node'));
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FaceVision — Vérification Faciale Biométrique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;padding-top:var(--nav-h);overflow:hidden;background:var(--obsidian)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(212,175,55,.08) 0%,transparent 70%),radial-gradient(circle at 80% 50%,rgba(107,155,209,.04) 0%,transparent 50%),radial-gradient(circle at 20% 60%,rgba(155,126,200,.04) 0%,transparent 50%)}
+.hero-bg-grid{position:absolute;inset:0;opacity:.02;background-image:linear-gradient(rgba(212,175,55,1) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,1) 1px,transparent 1px);background-size:80px 80px;animation:gridShift 25s linear infinite}
+@keyframes gridShift{from{transform:translateY(0)}to{transform:translateY(80px)}}
+.face-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:24px;width:100%;height:100%}
+.face-cell{aspect-ratio:.75;background:var(--obsidian-light);border-radius:6px;border:1px solid rgba(212,175,55,.06);position:relative;overflow:hidden;animation:facePulse 5s ease-in-out infinite}
+.face-cell:nth-child(odd){animation-delay:-2.5s}
+.face-cell:nth-child(3n){animation-delay:-1.5s}
+@keyframes facePulse{0%,100%{opacity:.4}50%{opacity:.7}}
+.hero-container{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1400px;margin:0 auto;padding:0 3rem}
+.hero-left{display:flex;flex-direction:column;gap:1.5rem}
+.hero-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);opacity:.7}
+.hero-title{font-family:var(--font-display);font-size:clamp(2.8rem,5vw,4.5rem);font-weight:700;line-height:1.1}
+.hero-title span{background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:15px;color:rgba(245,240,232,.6);line-height:1.8;max-width:500px}
+.hero-tags{display:flex;gap:.8rem;flex-wrap:wrap}
+.hero-tag{padding:5px 14px;border-radius:20px;border:1px solid rgba(212,175,55,.2);font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(212,175,55,.6)}
+.hero-actions{display:flex;gap:1rem;margin-top:.5rem}
+.btn-primary{padding:14px 32px;background:var(--gold);color:#1a160b;border:none;border-radius:8px;font-family:var(--font-body);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:var(--transition)}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,175,55,.3)}
+.btn-outline{padding:14px 28px;background:transparent;color:var(--gold);border:1.5px solid rgba(212,175,55,.3);border-radius:8px;font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:var(--transition)}
+.btn-outline:hover{border-color:var(--gold);background:rgba(212,175,55,.06)}
+.hero-right{position:relative}
+.hero-visual{background:var(--obsidian-light);border:1px solid rgba(212,175,55,.1);border-radius:20px;padding:2rem;position:relative;overflow:hidden}
+.hero-visual::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%)}
+.pipeline-mini{display:flex;flex-direction:column;gap:.7rem}
+.pm-step{display:flex;align-items:center;gap:1rem;padding:.8rem 1rem;background:rgba(255,255,255,.02);border-radius:10px;border:1px solid rgba(212,175,55,.06);transition:var(--transition)}
+.pm-step:hover{border-color:rgba(212,175,55,.2);background:rgba(212,175,55,.03)}
+.pm-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.pm-text{flex:1}
+.pm-name{font-size:12px;font-weight:600;color:var(--cream)}
+.pm-sub{font-family:var(--font-mono);font-size:10px;color:rgba(212,175,55,.4)}
+.pm-badge{font-family:var(--font-mono);font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600}
+.stats-band{background:rgba(255,255,255,.02);border-top:1px solid rgba(212,175,55,.06);border-bottom:1px solid rgba(212,175,55,.06);padding:2.5rem 3rem}
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;max-width:1400px;margin:0 auto}
+.stat-item{text-align:center;padding:1rem}
+.stat-val{font-family:var(--font-display);font-size:1.8rem;font-weight:700}
+.stat-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(212,175,55,.4);margin-top:4px}
+.feature-section{padding:5rem 3rem;max-width:1400px;margin:0 auto}
+.sec-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:.8rem}
+.sec-title-lg{font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.8rem);font-weight:700;margin-bottom:1.5rem}
+.feature-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.feat-card{background:var(--obsidian-light);border-radius:16px;padding:2rem;border:1px solid rgba(212,175,55,.08);transition:var(--transition);position:relative;overflow:hidden}
+.feat-card:hover{border-color:rgba(212,175,55,.25);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.feat-card-icon{font-size:2rem;margin-bottom:1rem;display:block}
+.feat-card-title{font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:.6rem}
+.feat-card-desc{font-size:12px;color:rgba(212,175,55,.5);line-height:1.8}
+.feat-card-badge{position:absolute;top:1.2rem;right:1.2rem;padding:3px 10px;border-radius:10px;font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1px}
+.innovation-section{background:rgba(255,255,255,.015);border-top:1px solid rgba(212,175,55,.06);border-bottom:1px solid rgba(212,175,55,.06);padding:4rem 3rem}
+.innovation-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;max-width:1400px;margin:0 auto;align-items:center}
+.code-block{background:var(--obsidian);border:1px solid rgba(212,175,55,.1);border-radius:12px;padding:1.5rem;font-family:var(--font-mono);font-size:12px;line-height:1.9;overflow:hidden}
+.code-line{color:rgba(212,175,55,.5)}
+.code-comment{color:rgba(212,175,55,.3)}
+.code-key{color:#6BAEE8}
+.code-val{color:#9B7EC8}
+.code-fn{color:var(--gold)}
+.nav-links .active-nav{color:var(--gold)!important}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="index.html"><div class="nav-logo-icon">👁</div><div><span class="nav-logo-text">FaceVision</span><span class="nav-logo-sub">Biometric Platform</span></div></a>
+  <ul class="nav-links">
+    <li><a class="nav-link-btn active-nav" href="index.html">Accueil</a></li>
+    <li><a class="nav-link-btn" href="modeles.html">Modèles</a></li>
+    <li><a class="nav-link-btn" href="resultats.html">Résultats</a></li>
+    <li><a class="nav-link-btn" href="methodo.html">Méthodo</a></li>
+    <li><a class="nav-link-btn" href="apropos.html">À propos</a></li>
+    <li><a class="nav-cta" href="test.html">▶ Tester</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bg-grid"></div>
+  <div class="hero-container">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Système Biométrique Facial · v2.0 · ISO/IEC 19795-1</div>
+      <h1 class="hero-title">
+        Vérification Faciale<br>
+        <span>Niveau de Confiance</span><br>
+        Calibré
+      </h1>
+      <p class="hero-desc">Pipeline FaceNet 512D → |e₁−e₂| → SVM RBF + Calibration Platt. Décision ternaire (ACCEPTÉ / INCERTAIN / REJETÉ) basée sur P(genuine) ∈ [0,1], un véritable niveau de confiance calibré — pas un simple score de distance.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">Split 50/50 Stratifié</span>
+        <span class="hero-tag">|e₁−e₂| ∈ ℝ⁵¹²</span>
+        <span class="hero-tag">SVM RBF + Platt</span>
+        <span class="hero-tag">Décision Ternaire</span>
+        <span class="hero-tag">AUC ≈ 0.9995</span>
+      </div>
+      <div class="hero-actions">
+        <a href="test.html" class="btn-primary">▶ Tester maintenant</a>
+        <a href="modeles.html" class="btn-outline">Voir les modèles</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-visual">
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);opacity:.5;margin-bottom:1.2rem">Pipeline de vérification</div>
+        <div class="pipeline-mini">
+          <div class="pm-step"><div class="pm-icon" style="background:rgba(107,155,209,.1)">🖼</div><div class="pm-text"><div class="pm-name">Split 50/50 Stratifié</div><div class="pm-sub">Par identité — reproductible SEED=42</div></div><span class="pm-badge" style="background:rgba(107,155,209,.1);color:#6BAEE8">ORL+Yale</span></div>
+          <div class="pm-step"><div class="pm-icon" style="background:rgba(212,175,55,.08)">⚙️</div><div class="pm-text"><div class="pm-name">CLAHE + MTCNN</div><div class="pm-sub">Normalisation éclairage, alignement facial</div></div></div>
+          <div class="pm-step"><div class="pm-icon" style="background:rgba(155,126,200,.1)">🧬</div><div class="pm-text"><div class="pm-name">FaceNet 512D</div><div class="pm-sub">InceptionResnetV1 VGGFace2, normalisé L2</div></div><span class="pm-badge" style="background:rgba(155,126,200,.1);color:#9B7EC8">512D</span></div>
+          <div class="pm-step"><div class="pm-icon" style="background:rgba(76,175,124,.1)">🔀</div><div class="pm-text"><div class="pm-name">|e₁−e₂| ∈ ℝ⁵¹²</div><div class="pm-sub">Différence absolue — invariant à l'ordre</div></div><span class="pm-badge" style="background:rgba(76,175,124,.1);color:var(--success)">Clé</span></div>
+          <div class="pm-step"><div class="pm-icon" style="background:rgba(212,175,55,.08)">⚡</div><div class="pm-text"><div class="pm-name">SVM RBF + Calibration Platt</div><div class="pm-sub">GridSearchCV 5-fold → P(genuine) ∈ [0,1]</div></div></div>
+          <div class="pm-step"><div class="pm-icon" style="background:rgba(212,168,55,.12)">🎯</div><div class="pm-text"><div class="pm-name">Décision Ternaire</div><div class="pm-sub">ACCEPTÉ / INCERTAIN / REJETÉ</div></div><span class="pm-badge" style="background:rgba(212,168,55,.12);color:var(--gold)">Nouveau</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-band">
+  <div class="stats-grid">
+    <div class="stat-item"><div class="stat-val" style="color:var(--accent-orl)">0.9995</div><div class="stat-lbl">AUC ORL</div></div>
+    <div class="stat-item"><div class="stat-val" style="color:var(--accent-yale)">1.0000</div><div class="stat-lbl">AUC Yale</div></div>
+    <div class="stat-item"><div class="stat-val" style="color:var(--success)">1.00%</div><div class="stat-lbl">EER ORL</div></div>
+    <div class="stat-item"><div class="stat-val" style="color:var(--success)">0.00%</div><div class="stat-lbl">EER Yale</div></div>
+    <div class="stat-item"><div class="stat-val" style="color:var(--gold)">512D</div><div class="stat-lbl">Features</div></div>
+    <div class="stat-item"><div class="stat-val" style="color:var(--cream)">3 zones</div><div class="stat-lbl">Décision</div></div>
+  </div>
+</div>
+
+<section class="feature-section">
+  <div class="sec-eyebrow">Innovation</div>
+  <h2 class="sec-title-lg">Ce qui change par rapport à la baseline</h2>
+  <div class="feature-cards">
+    <div class="feat-card">
+      <span class="feat-card-icon">🎯</span>
+      <span class="feat-card-badge" style="background:rgba(76,175,124,.1);color:var(--success)">Nouveau</span>
+      <div class="feat-card-title">Niveau de confiance calibré</div>
+      <div class="feat-card-desc">P(genuine) via Calibration Platt-Sigmoid : au lieu d'un score arbitraire, une vraie probabilité. Si P(genuine)=0.85, ~85% des paires similaires sont genuines dans les données réelles.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-card-icon">🔀</span>
+      <span class="feat-card-badge" style="background:rgba(212,175,55,.1);color:var(--gold)">Clé</span>
+      <div class="feat-card-title">|e₁−e₂| ∈ ℝ⁵¹²</div>
+      <div class="feat-card-desc">Le SVM apprend quelles des 512 dimensions de la différence sont discriminantes — bien plus riche que la seule distance cosine. Invariant à l'ordre des paires (symétrie garantie).</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-card-icon">⚠️</span>
+      <span class="feat-card-badge" style="background:rgba(107,155,209,.1);color:#6BAEE8">Opérationnel</span>
+      <div class="feat-card-title">Zone d'incertitude explicite</div>
+      <div class="feat-card-desc">Au lieu d'une erreur silencieuse, le système signale explicitement les cas ambigus (INCERTAIN) — là où les distributions genuine/impostor se chevauchent encore statistiquement.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-card-icon">📐</span>
+      <div class="feat-card-title">Split 50/50 stratifié par identité</div>
+      <div class="feat-card-desc">Sur petits datasets (ORL=400 imgs, Yale=165), le split 50/50 donne une variance EER ~2× plus faible qu'un split 80/20. Chaque identité est représentée dans les deux splits.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-card-icon">🔬</span>
+      <div class="feat-card-title">Standards ISO/IEC 19795-1</div>
+      <div class="feat-card-desc">Évaluation complète : DET curve, d-prime, Decidability Index, ECE (Expected Calibration Error), Brier Score. Pas seulement AUC/EER — la qualité de la confiance elle-même est mesurée.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-card-icon">🧠</span>
+      <div class="feat-card-title">Erreurs → Alertes explicites</div>
+      <div class="feat-card-desc">Démontré en Cellule 14 : les faux acceptés / faux rejetés du seuil fixe sont reclassés INCERTAIN par le SVM. Une erreur qui aurait été silencieuse devient une alerte transmissible.</div>
+    </div>
+  </div>
+</section>
+
+<section class="innovation-section">
+  <div class="innovation-grid">
+    <div>
+      <div class="sec-eyebrow">Recadrage scientifique</div>
+      <h2 class="sec-title-lg">La vraie contribution</h2>
+      <p style="font-size:14px;color:rgba(212,175,55,.6);line-height:1.9;margin-bottom:1.5rem">Le SVM n'est pas meilleur que la baseline pour répondre à la question <em>"est-ce la même personne ?"</em> — les deux savent déjà très bien y répondre sur ces données contrôlées (AUC ≈ 1). Le SVM répond à une question différente, plus opérationnelle :</p>
+      <blockquote style="border-left:3px solid var(--gold);padding:1rem 1.5rem;margin:1.5rem 0;background:rgba(212,175,55,.04);border-radius:0 8px 8px 0">
+        <p style="font-family:var(--font-display);font-size:1.1rem;font-style:italic;color:var(--cream)">"À quel point puis-je faire confiance à cette réponse, et dans quels cas dois-je m'abstenir de trancher automatiquement ?"</p>
+      </blockquote>
+      <div style="display:flex;gap:1rem;margin-top:2rem">
+        <a href="methodo.html" class="btn-outline" style="font-size:12px;padding:10px 20px">Voir la méthodologie</a>
+        <a href="resultats.html" class="btn-outline" style="font-size:12px;padding:10px 20px">Voir les résultats</a>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-comment"># Pipeline FaceVision v2.0 — Niveau de confiance calibré</div>
+      <br>
+      <div class="code-line"><span class="code-comment"># 1. Split 50/50 stratifié par identité</span></div>
+      <div class="code-line"><span class="code-fn">split_dataset_5050</span>(<span class="code-val">raw_dir</span>, <span class="code-val">split_dir</span>, <span class="code-val">seed=42</span>)</div>
+      <br>
+      <div class="code-line"><span class="code-comment"># 2. FaceNet 512D normalisé L2</span></div>
+      <div class="code-line"><span class="code-val">e</span> = <span class="code-fn">facenet</span>(<span class="code-val">image</span>) / <span class="code-fn">norm</span>(<span class="code-val">e</span>)</div>
+      <br>
+      <div class="code-line"><span class="code-comment"># 3. Feature engineering clé</span></div>
+      <div class="code-line"><span class="code-val">X</span> = <span class="code-fn">np.abs</span>(<span class="code-val">e1</span> - <span class="code-val">e2</span>)  <span class="code-comment"># ∈ ℝ⁵¹²</span></div>
+      <br>
+      <div class="code-line"><span class="code-comment"># 4. SVM + Calibration Platt</span></div>
+      <div class="code-line"><span class="code-val">svm</span> = <span class="code-fn">CalibratedClassifierCV</span>(<span class="code-val">SVC</span>(</div>
+      <div class="code-line">&nbsp;&nbsp;<span class="code-key">kernel</span>=<span class="code-val">'rbf'</span>, <span class="code-key">C</span>=<span class="code-val">best_C</span>, <span class="code-key">gamma</span>=<span class="code-val">best_g</span></div>
+      <div class="code-line">), <span class="code-key">method</span>=<span class="code-val">'sigmoid'</span>)</div>
+      <br>
+      <div class="code-line"><span class="code-comment"># 5. Décision ternaire</span></div>
+      <div class="code-line"><span class="code-val">p</span> = <span class="code-fn">svm.predict_proba</span>(<span class="code-val">X</span>)[<span class="code-val">:,1</span>]  <span class="code-comment"># P(genuine)</span></div>
+      <div class="code-line"><span class="code-val">zone</span> = <span class="code-key">ACCEPTÉ</span> <span class="code-comment">if</span> <span class="code-val">p</span> >= <span class="code-val">Thigh</span></div>
+      <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="code-key">else INCERTAIN</span> <span class="code-comment">if</span> <span class="code-val">p</span> >= <span class="code-val">Tlow</span></div>
+      <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="code-key">else REJETÉ</span></div>
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid rgba(212,175,55,.08);padding:2rem 3rem;display:flex;justify-content:space-between;align-items:center">
+  <div style="font-family:var(--font-mono);font-size:11px;color:rgba(212,175,55,.3)">FaceVision — SVM RBF |e₁−e₂| 512D · Split 50/50 · Calibration Platt · ISO/IEC 19795-1</div>
+  <div style="display:flex;gap:1.5rem">
+    <a href="methodo.html" style="color:rgba(212,175,55,.4);text-decoration:none;font-size:12px">Méthodologie</a>
+    <a href="resultats.html" style="color:rgba(212,175,55,.4);text-decoration:none;font-size:12px">Résultats</a>
+    <a href="apropos.html" style="color:rgba(212,175,55,.4);text-decoration:none;font-size:12px">À propos</a>
+  </div>
+</footer>
+</body>
+</html>

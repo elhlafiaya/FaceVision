@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Vérification — FaceVision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body{background:var(--obsidian);color:var(--cream);font-family:var(--font-body)}
+.test-layout{display:grid;grid-template-columns:380px 1fr;min-height:60vh}
+
+/* LEFT PANEL */
+.test-panel{background:#141414;border-right:1px solid rgba(212,175,55,.15);padding:1.6rem 1.4rem;display:flex;flex-direction:column;gap:1.1rem;overflow-y:auto;max-height:calc(100vh - var(--nav-h));position:sticky;top:var(--nav-h)}
+.panel-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);opacity:.6;display:block;margin-bottom:.4rem}
+.panel-title{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--cream)}
+
+.model-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.model-btn{padding:12px 8px;border-radius:8px;border:1.5px solid rgba(212,175,55,.2);background:#1A1A1A;color:rgba(212,175,55,.45);font-family:var(--font-body);font-size:11px;font-weight:500;cursor:pointer;transition:var(--transition);text-align:center;line-height:1.4}
+.model-btn:hover:not(.active){border-color:rgba(212,175,55,.5);color:var(--cream)}
+.model-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,175,55,.08);font-weight:600}
+.model-btn .mb-top{font-size:13px;margin-bottom:2px}
+.model-btn .mb-sub{font-size:9px;letter-spacing:.5px;opacity:.7}
+
+.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:rgba(255,255,255,.03);border-radius:10px;padding:3px}
+.mode-tab{padding:9px;border-radius:8px;border:none;background:transparent;font-family:var(--font-body);font-size:11px;font-weight:500;cursor:pointer;transition:var(--transition);color:rgba(212,175,55,.5);text-align:center}
+.mode-tab.active{background:#1A1A1A;color:var(--gold);font-weight:600}
+
+.subj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:200px;overflow-y:auto;padding-right:2px}
+.subj-card{border:1.5px solid rgba(212,175,55,.15);border-radius:8px;overflow:hidden;cursor:pointer;transition:var(--transition);position:relative;aspect-ratio:1;background:#1A1A1A}
+.subj-card:hover{border-color:rgba(212,175,55,.5);transform:translateY(-1px)}
+.subj-card.active{border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,175,55,.2)}
+.subj-card img{width:100%;height:100%;object-fit:cover;display:block}
+.subj-lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);font-family:var(--font-mono);font-size:8px;text-align:center;padding:2px 0;color:#FBF6EC}
+
+.sel-summary{display:flex;gap:10px;align-items:center;background:#1A1A1A;border:1px solid rgba(212,175,55,.15);border-radius:8px;padding:9px}
+.sel-summary img{width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid rgba(212,175,55,.2)}
+.ss-lbl{font-family:var(--font-mono);font-size:8px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:2px;opacity:.7}
+.ss-txt{font-size:11px;color:rgba(245,240,232,.6);line-height:1.5}
+
+.probe-row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.probe-card{border:1.5px solid rgba(212,175,55,.15);border-radius:8px;overflow:hidden;cursor:pointer;transition:var(--transition);aspect-ratio:1;background:#1A1A1A}
+.probe-card:hover{border-color:rgba(212,175,55,.5)}
+.probe-card.active{border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,175,55,.2)}
+.probe-card img{width:100%;height:100%;object-fit:cover;display:block}
+.probe-card.impostor-card{border-color:rgba(199,91,91,.25)}
+.probe-card.impostor-card:hover{border-color:rgba(199,91,91,.55)}
+.probe-sep{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(212,175,55,.4);text-align:center;padding:4px 0}
+
+.upload-zone{border:2px dashed rgba(212,175,55,.3);border-radius:12px;background:#1A1A1A;padding:1.5rem;text-align:center;cursor:pointer;transition:var(--transition);position:relative}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--gold);background:rgba(212,175,55,.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.uz-icon{font-size:2rem;margin-bottom:.4rem;display:block}
+.uz-title{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:.2rem}
+.uz-sub{font-size:11px;color:rgba(212,175,55,.4)}
+.upload-preview{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:none;margin-top:.6rem;border:1px solid rgba(212,175,55,.2)}
+
+.info-box{background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:8px;padding:.75rem;font-size:11px;color:rgba(212,175,55,.55);line-height:1.7}
+.info-box strong{color:var(--gold)}
+
+.run-btn{width:100%;padding:14px;background:var(--gold);color:#1a160b;border:none;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:10px;margin-top:auto}
+.run-btn:hover:not(:disabled){background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,175,55,.3)}
+.run-btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+
+/* RIGHT RESULTS PANEL */
+.test-results{padding:2rem 2.2rem;overflow-y:auto;background:var(--obsidian);position:relative}
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;text-align:center;gap:.7rem}
+.ph-icon{font-size:4rem;opacity:.1}
+.ph-title{font-family:var(--font-display);font-size:1.8rem;color:rgba(212,175,55,.2);font-weight:700}
+.ph-sub{font-size:12px;color:rgba(212,175,55,.3);max-width:340px;line-height:1.8}
+
+.loading-overlay{position:absolute;inset:0;background:rgba(13,13,13,.92);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:.8rem}
+.loading-overlay.on{display:flex}
+.loading-spinner{width:40px;height:40px;border:2px solid rgba(212,175,55,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+.loading-text{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.results-area{display:none}
+.results-area.on{display:block;animation:riseIn .45s ease both}
+@keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.compare-row{display:grid;grid-template-columns:1fr 60px 1fr;gap:1rem;align-items:center;margin-bottom:1.4rem}
+.cmp-card{background:var(--obsidian-light);border-radius:12px;border:1px solid rgba(212,175,55,.15);padding:1rem;text-align:center}
+.cmp-card img{width:100%;max-width:130px;border-radius:8px;margin:0 auto .5rem;display:block;aspect-ratio:1;object-fit:cover;border:1px solid rgba(212,175,55,.15)}
+.cmp-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:.7}
+.cmp-sub{font-size:11px;color:rgba(212,175,55,.5);margin-top:2px}
+.cmp-vs{font-family:var(--font-display);font-size:1.5rem;color:rgba(212,175,55,.3);text-align:center}
+
+.decision-hero{border-radius:14px;padding:1.6rem;margin-bottom:1.4rem;text-align:center;border:1.5px solid;position:relative;overflow:hidden}
+.dh-accepted{background:rgba(76,175,124,.06);border-color:rgba(76,175,124,.35)}
+.dh-uncertain{background:rgba(212,175,55,.07);border-color:rgba(212,175,55,.4)}
+.dh-rejected{background:rgba(199,91,91,.06);border-color:rgba(199,91,91,.35)}
+.dh-icon{font-size:2.8rem;margin-bottom:.4rem;display:block}
+.dh-verdict{font-family:var(--font-display);font-size:2.2rem;font-weight:700;letter-spacing:1px}
+.dh-accepted .dh-verdict{color:var(--success)}
+.dh-uncertain .dh-verdict{color:var(--gold)}
+.dh-rejected .dh-verdict{color:var(--danger)}
+.dh-sub{font-size:12px;color:rgba(212,175,55,.5);margin-top:.3rem}
+.dh-tag{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;padding:3px 12px;border-radius:12px;background:rgba(212,175,55,.1);color:var(--gold);border:1px solid rgba(212,175,55,.2);margin-top:.6rem}
+
+.score-section{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem}
+.sc-card{background:var(--obsidian-light);border-radius:12px;padding:1.2rem;border:1px solid rgba(212,175,55,.12)}
+.sc-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;opacity:.7}
+.sc-num{font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:var(--cream);margin-bottom:.6rem}
+.gauge-track{height:8px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;margin-bottom:.5rem}
+.gauge-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.gauge-marker{position:absolute;top:-6px;bottom:-6px;width:2px;border-radius:2px;background:var(--gold)}
+.gauge-marker::after{content:attr(data-label);position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:8px;color:var(--gold);white-space:nowrap}
+.zone-line{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(212,175,55,.55);padding:3px 0}
+.zone-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.2rem}
+.met{background:var(--obsidian-light);border-radius:10px;padding:1rem;text-align:center;border:1px solid rgba(212,175,55,.1)}
+.met-val{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--cream)}
+.met-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(212,175,55,.45);margin-top:3px}
+
+.feat-card{background:var(--obsidian-light);border-radius:12px;padding:1.2rem;border:1px solid rgba(212,175,55,.12);margin-bottom:1.2rem}
+.feat-card-title{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;opacity:.8}
+.dim-row{display:flex;align-items:center;gap:10px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.dim-name{font-family:var(--font-mono);font-size:10px;color:rgba(212,175,55,.5);min-width:90px;text-align:right}
+.dim-bar-wrap{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px}
+.dim-bar{height:100%;border-radius:3px;background:var(--accent-orl)}
+.dim-val{font-family:var(--font-mono);font-size:10px;color:var(--gold);min-width:55px;text-align:right}
+
+.justif-btn{width:100%;padding:13px;background:transparent;border:1.5px solid rgba(212,175,55,.3);color:var(--gold);border-radius:10px;font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:var(--transition);margin-bottom:1.2rem}
+.justif-btn:hover{border-color:var(--gold);background:rgba(212,175,55,.06)}
+.justif-box{display:none;background:var(--obsidian-light);border:1px solid rgba(212,175,55,.18);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;font-size:13px;line-height:1.9;animation:riseIn .4s ease both}
+.justif-box.on{display:block}
+.justif-box h4{font-family:var(--font-display);font-size:1.2rem;color:var(--gold);margin-bottom:.8rem;font-weight:700}
+.justif-box p{color:rgba(212,175,55,.6);margin-bottom:.6rem}
+.jline{display:flex;gap:8px;align-items:flex-start;margin-bottom:.5rem}
+.jicon{flex-shrink:0;margin-top:2px;color:var(--gold)}
+.eq{font-family:var(--font-mono);font-size:11px;background:rgba(212,175,55,.08);border-radius:6px;padding:7px 12px;display:inline-block;color:var(--cream);margin:.3rem 0;border:1px solid rgba(212,175,55,.15)}
+.jsub{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:.6;margin:1rem 0 .5rem}
+
+.overlap-note{background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.12);border-radius:10px;padding:1rem;font-size:11.5px;color:rgba(212,175,55,.55);line-height:1.8;margin-bottom:1.2rem}
+
+/* PAGE HEADER — AUTHENTIFICATION */
+.page-header{padding:2.2rem 2.2rem 1.6rem;padding-top:calc(var(--nav-h) + 2.2rem);background:linear-gradient(180deg,#141414 0%,var(--obsidian) 100%);border-bottom:1px solid rgba(212,175,55,.15);display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.ph-left{max-width:640px}
+.page-tag{font-family:var(--font-mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);opacity:.7;display:block;margin-bottom:.5rem}
+.page-title-xl{font-family:var(--font-display);font-size:3rem;font-weight:700;color:var(--cream);line-height:1.1;margin-bottom:.7rem}
+.page-desc{font-size:13px;color:rgba(245,240,232,.6);line-height:1.8}
+.page-desc strong{color:var(--gold)}
+.switch-mode-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;background:transparent;border:1.5px solid rgba(212,175,55,.4);color:var(--gold);border-radius:10px;font-family:var(--font-body);font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:var(--transition);white-space:nowrap;text-decoration:none;flex-shrink:0;margin-top:.3rem}
+.switch-mode-btn:hover{border-color:var(--gold);background:rgba(212,175,55,.08);transform:translateY(-2px)}
+@media(max-width:900px){.page-header{padding-top:calc(var(--nav-h) + 1.6rem)}.page-title-xl{font-size:2.1rem}}
+
+@media(max-width:900px){
+  .test-layout{grid-template-columns:1fr}
+  .test-panel{position:relative;max-height:none}
+  .compare-row{grid-template-columns:1fr}
+  .cmp-vs{display:none}
+  .score-section,.metrics-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<nav class="nav dark">
+  <a class="nav-logo" href="index.html"><div class="nav-logo-icon">👁</div><div><span class="nav-logo-text">FaceVision</span><span class="nav-logo-sub">Biometric Platform</span></div></a>
+  <ul class="nav-links">
+    <li><a class="nav-link-btn" href="index.html">Accueil</a></li>
+    <li><a class="nav-link-btn" href="modeles.html">Modèles</a></li>
+    <li><a class="nav-link-btn" href="resultats.html">Résultats</a></li>
+    <li><a class="nav-link-btn" href="methodo.html">Méthodo</a></li>
+    <li><a class="nav-link-btn" href="apropos.html">À propos</a></li>
+    <li><a class="nav-cta active-nav" href="test.html">▶ Tester</a></li>
+  </ul>
+</nav>
+
+<header class="page-header">
+  <div class="ph-left">
+    <span class="page-tag">Module 2 · Paires Libres / Zone Incertaine</span>
+    <div class="page-title-xl">Vérification</div>
+    <p class="page-desc">Cette page est faite en <strong>cohérence avec le modèle intégré</strong> pour tester le comportement du système sur des <strong>paires quelconques</strong> — notamment celles que le modèle place en <strong>zone incertaine</strong> [Tlow, Thigh[. Importez librement deux images (même personne ou personnes différentes) : le pipeline CLAHE → MTCNN → FaceNet 512D → SVM RBF calibré les compare directement, sans passer par une base d'identités enrôlées. Pour la vraie authentification 1:1, retournez au module principal.</p>
+  </div>
+  <a class="switch-mode-btn" href="test.html">🔒 Authentification</a>
+</header>
+
+<div class="test-layout">
+
+  <!-- ══ LEFT PANEL ══ -->
+  <aside class="test-panel">
+    <div>
+      <span class="panel-tag">Configuration du test</span>
+      <div class="panel-title">Vérification par Paire</div>
+
+    <!-- Dataset selector -->
+    <div style="margin-top:.8rem">
+      <span class="panel-tag">Modèle SVM</span>
+      <div class="model-grid" id="dataset-selector">
+        <div class="model-btn active" data-dataset="orl" onclick="selectDataset('orl')">
+          <div class="mb-top">ORL</div>
+          <div class="mb-sub">40 sujets · Frontal</div>
+        </div>
+        <div class="model-btn" data-dataset="yale" onclick="selectDataset('yale')">
+          <div class="mb-top">Yale</div>
+          <div class="mb-sub">15 sujets · Variations</div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Image upload A -->
+    <div>
+      <span class="panel-tag">① Importer l'image A</span>
+      <div class="upload-zone" id="upload-zone-a"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event,'a')">
+        <input type="file" accept="image/jpeg,image/png,image/bmp,image/webp" id="file-input-a" onchange="handleFile(this.files[0],'a')">
+        <span class="uz-icon">🖼</span>
+        <div class="uz-title">Glissez une photo ou cliquez</div>
+        <div class="uz-sub">JPEG · PNG · BMP · WebP</div>
+        <img id="upload-preview-a" class="upload-preview" alt="Aperçu A">
+      </div>
+    </div>
+
+    <!-- Image upload B -->
+    <div>
+      <span class="panel-tag">② Importer l'image B</span>
+      <div class="upload-zone" id="upload-zone-b"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event,'b')">
+        <input type="file" accept="image/jpeg,image/png,image/bmp,image/webp" id="file-input-b" onchange="handleFile(this.files[0],'b')">
+        <span class="uz-icon">🖼</span>
+        <div class="uz-title">Glissez une photo ou cliquez</div>
+        <div class="uz-sub">JPEG · PNG · BMP · WebP</div>
+        <img id="upload-preview-b" class="upload-preview" alt="Aperçu B">
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Pipeline appliqué :</strong> les deux images (A et B) sont traitées par CLAHE → MTCNN → FaceNet 512D puis comparées directement entre elles — sans passer par une base d'identités enrôlées. La décision repose sur |e_A−e_B| ∈ ℝ⁵¹² (SVM RBF calibré Platt). Utile pour rejouer manuellement des paires que le modèle a classées en <strong>zone incertaine</strong>.
+    </div>
+
+    <button class="run-btn" id="run-btn" onclick="runVerification()" disabled>
+      ⚡ Analyser
+    </button>
+  </aside>
+
+  <!-- ══ RIGHT RESULTS ══ -->
+  <main class="test-results">
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">CALCUL EN COURS…</div>
+    </div>
+
+    <div class="placeholder" id="placeholder">
+      <span class="ph-icon">🔍</span>
+      <div class="ph-title">Prêt à analyser</div>
+      <div class="ph-sub">Importez les images A et B puis cliquez sur « Analyser » pour obtenir la décision ACCÈS / REFUS de la paire et son analyse explicative — idéal pour rejouer les paires classées en zone incertaine.</div>
+    </div>
+
+    <div class="results-area" id="results-area">
+
+      <div class="compare-row">
+        <div class="cmp-card">
+          <img id="res-probe-img" src="" alt="">
+          <div class="cmp-lbl">Image A</div>
+          <div class="cmp-sub" id="res-probe-name">—</div>
+        </div>
+        <div class="cmp-vs">↔</div>
+        <div class="cmp-card">
+          <img id="res-ref-img" src="" alt="">
+          <div class="cmp-lbl">Image B</div>
+          <div class="cmp-sub" id="res-ref-name">—</div>
+        </div>
+      </div>
+
+      <div class="decision-hero" id="decision-hero">
+        <span class="dh-icon" id="dh-icon">✅</span>
+        <div class="dh-verdict" id="dh-verdict">ACCÈS</div>
+        <div class="dh-sub" id="dh-sub">P(genuine) = 0.94 — confiance élevée</div>
+        <span class="dh-tag" id="dh-tag">Décision automatique</span>
+      </div>
+
+      <div class="score-section">
+        <div class="sc-card">
+          <div class="sc-lbl">P(genuine) — SVM Calibré (Platt)</div>
+          <div class="sc-num" id="sc-svm">0.94</div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="gauge-svm" style="width:94%;background:var(--success)"></div>
+            <div class="gauge-marker" id="marker-tlow" style="left:35%" data-label="Tlow"></div>
+            <div class="gauge-marker" id="marker-thigh" style="left:65%" data-label="Thigh"></div>
+          </div>
+          <div class="zone-line"><span class="zone-dot" style="background:var(--success)"></span>ACCÈS ≥ Thigh</div>
+          <div class="zone-line"><span class="zone-dot" style="background:var(--gold)"></span>INCERTAIN [Tlow, Thigh[</div>
+          <div class="zone-line"><span class="zone-dot" style="background:var(--danger)"></span>REFUS &lt; Tlow</div>
+        </div>
+        <div class="sc-card">
+          <div class="sc-lbl">Similarité Cosine (Baseline)</div>
+          <div class="sc-num" id="sc-cos">0.91</div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="gauge-cos" style="width:91%;background:var(--accent-orl)"></div>
+            <div class="gauge-marker" id="marker-thresh" style="left:58%" data-label="Seuil EER"></div>
+          </div>
+          <div class="zone-line"><span class="zone-dot" style="background:var(--accent-orl)"></span>Décision <strong style="color:var(--cream)" id="cos-decision">ACCÈS</strong> (binaire, sans confiance)</div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="met"><div class="met-val" id="met-auc">0.9995</div><div class="met-lbl">AUC modèle</div></div>
+        <div class="met"><div class="met-val" id="met-eer">1.00%</div><div class="met-lbl">EER modèle</div></div>
+        <div class="met"><div class="met-val" id="met-expected">Genuine</div><div class="met-lbl">Attendu</div></div>
+      </div>
+
+      <div class="overlap-note" id="overlap-note">
+        💡 <strong style="color:var(--cream)">Lecture :</strong> cette paire se situe loin du chevauchement statistique genuine/impostor — décision automatique fiable.
+      </div>
+
+      <button class="justif-btn" onclick="toggleJustif()">🔬 Afficher la justification scientifique</button>
+
+      <div class="justif-box" id="justif-box">
+        <h4>Justification Scientifique de la Décision</h4>
+
+        <div class="jsub">① Pipeline appliqué</div>
+        <div class="jline"><span class="jicon">✓</span><p>Embedding FaceNet 512D extrait via InceptionResnetV1 (VGGFace2), normalisé L2, pour l'image importée et pour l'identité de référence enrôlée la plus proche.</p></div>
+        <div class="jline"><span class="jicon">✓</span><p>Feature engineering : <span class="eq">X = |e₁ − e₂| ∈ ℝ⁵¹²</span> — différence absolue composante par composante.</p></div>
+        <div class="jline"><span class="jicon">✓</span><p>StandardScaler appliqué (paramètres appris à l'entraînement), puis SVM RBF calibré (Platt-Sigmoid).</p></div>
+
+        <div class="jsub">② Vecteur |e₁−e₂| — dimensions les plus contributives</div>
+        <div class="feat-card" style="margin-bottom:0;border:none;padding:0;background:transparent">
+          <div id="dim-bars"></div>
+        </div>
+
+        <div class="jsub">③ Comparaison Seuil Fixe vs SVM</div>
+        <div class="jline"><span class="jicon">⚖</span><p id="justif-compare-text">Le seuil fixe (cosine) et le SVM (P(genuine)) s'accordent sur cette image — décision cohérente entre les deux approches.</p></div>
+
+        <div class="jsub">④ Zone de décision</div>
+        <div class="jline"><span class="jicon">📍</span><p id="justif-zone-text">P(genuine) se situe au-delà du seuil Thigh = seuil_EER + 0.15, en dehors de la zone de chevauchement mesurée entre les distributions genuine/impostor (Cellule 15 du notebook).</p></div>
+
+        <div class="jsub">⑤ Limite scientifique assumée</div>
+        <div class="jline"><span class="jicon">📐</span><p>Sur ORL/Yale (bases frontales contrôlées), FaceNet est déjà quasi-parfait (AUC ≈ 1). Le gain du SVM n'est pas dans l'exactitude brute mais dans la calibration du niveau de confiance et la détection explicite des cas ambigus.</p></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  fileA: null,
+  fileB: null,
+  dataset: 'orl'  // orl ou yale — force le modèle SVM utilisé
+};
+
+function selectDataset(ds) {
+  state.dataset = ds;
+  document.querySelectorAll('#dataset-selector .model-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.dataset === ds);
+  });
+}
+
+function handleDrop(e, slot) {
+  e.preventDefault();
+  document.getElementById('upload-zone-' + slot).classList.remove('drag-over');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0], slot);
+}
+
+function handleFile(file, slot) {
+  if (!file) return;
+  state['file' + slot.toUpperCase()] = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const prev = document.getElementById('upload-preview-' + slot);
+    prev.src = ev.target.result;
+    prev.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  document.getElementById('run-btn').disabled = !(state.fileA && state.fileB);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RUN ANALYSIS
+// ═══════════════════════════════════════════════════════════
+async function runVerification() {
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('loading-overlay').classList.add('on');
+  document.getElementById('results-area').classList.remove('on');
+  document.getElementById('justif-box').classList.remove('on');
+
+  try {
+    const body = new FormData();
+    body.append('image_a', state.fileA);
+    body.append('image_b', state.fileB);
+    body.append('dataset', state.dataset);
+    const r = await fetch('/api/verify_pair', { method: 'POST', body });
+    const data = await r.json();
+    if (!r.ok || data.error) throw new Error(data.error || 'backend indisponible');
+    renderResults(data);
+  } catch (e) {
+    renderResults(mockResult());
+  } finally {
+    document.getElementById('loading-overlay').classList.remove('on');
+  }
+}
+
+let backendUnavailableWarned = false;
+
+function mockResult() {
+  // Filet de secours UNIQUEMENT si /api/verify_pair est injoignable (backend non lancé
+  // ou models/ absents — voir train_from_notebook.py). Ce n'est PAS le SVM réel.
+  const thresh = 0.5;
+  const tlow = thresh - 0.15, thigh = thresh + 0.15;
+  // Tirage réaliste sur [0,1] entier (et non deux clusters disjoints) pour que la
+  // zone INCERTAIN [tlow, thigh[ puisse être atteinte comme avec le vrai modèle.
+  const svmProba = Math.random();
+  const cosScore = svmProba * 2 - 1 + (Math.random() - 0.5) * 0.15; // approx. corrélé, bruité
+  let zone = svmProba >= thigh ? 'ACCEPTE' : svmProba < tlow ? 'REJETE' : 'INCERTAIN';
+  const srcA = document.getElementById('upload-preview-a').src;
+  const srcB = document.getElementById('upload-preview-b').src;
+  return {
+    svm_proba: svmProba, cos_score: cosScore, eer_threshold: thresh,
+    cos_threshold: thresh * 2 - 1, // approx. equivalent sur l'echelle cosine [-1,1] pour la demo
+    tlow, thigh, zone,
+    auc: '—', eer: '—',
+    expected: 'Paire libre (test manuel)',
+    ref_img: srcB, probe_img: srcA,
+    ref_name: 'Image B',
+    probe_name: 'Image A',
+    is_mock: true,
+    top_dims: Array.from({length:6}, (_, i) => ({dim: `e${Math.floor(Math.random()*512)}`, val: (Math.random()*0.4).toFixed(3)})).sort((a,b)=>b.val-a.val)
+  };
+}
+
+function renderResults(d) {
+  document.getElementById('results-area').classList.add('on');
+
+  let warn = document.getElementById('mock-warning');
+  if (d.is_mock) {
+    if (!warn) {
+      warn = document.createElement('div');
+      warn.id = 'mock-warning';
+      warn.style.cssText = 'background:rgba(199,91,91,.1);border:1px solid rgba(199,91,91,.4);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1.2rem;font-size:12px;color:#E8A0A0;line-height:1.7';
+      document.getElementById('results-area').prepend(warn);
+    }
+    warn.innerHTML = '⚠️ <strong style="color:var(--cream)">Backend non connecté ou route /api/verify_pair introuvable</strong> — ce résultat est une simulation de démonstration, ce n\'est pas une prédiction du SVM entraîné. Lancez <code style="color:var(--gold)">python app.py</code> avec la route <code style="color:var(--gold)">/api/verify_pair</code> et le dossier <code style="color:var(--gold)">models/</code> généré par <code style="color:var(--gold)">train_from_notebook.py</code> pour obtenir une vraie comparaison A ↔ B par le modèle.';
+  } else if (warn) {
+    warn.remove();
+  }
+
+  // En mode identification 1:N, le backend ne renvoie pas l'image importée
+  // (probe_img = ""). On retombe alors sur l'aperçu local déjà en mémoire
+  // côté navigateur (FileReader), au lieu d'afficher une icône cassée.
+  const localPreviewA = document.getElementById('upload-preview-a').src;
+  const localPreviewB = document.getElementById('upload-preview-b').src;
+  document.getElementById('res-probe-img').src = d.probe_img || localPreviewA;
+  document.getElementById('res-probe-name').textContent = d.probe_name;
+  document.getElementById('res-ref-img').src = d.ref_img || localPreviewB;
+  document.getElementById('res-ref-name').textContent = d.ref_name;
+
+  const zone = d.zone;
+  const hero = document.getElementById('decision-hero');
+  hero.className = 'decision-hero ' + (zone === 'ACCEPTE' ? 'dh-accepted' : zone === 'REJETE' ? 'dh-rejected' : 'dh-uncertain');
+  document.getElementById('dh-icon').textContent = zone === 'ACCEPTE' ? '✅' : zone === 'REJETE' ? '❌' : '⚠️';
+  document.getElementById('dh-verdict').textContent = zone === 'ACCEPTE' ? 'ACCÈS' : zone === 'REJETE' ? 'REFUS' : 'INCERTAIN';
+  document.getElementById('dh-sub').textContent = `P(genuine) = ${d.svm_proba.toFixed(3)} — ` +
+    (zone === 'ACCEPTE' ? 'confiance élevée' : zone === 'REJETE' ? 'confiance élevée (refus)' : 'zone de chevauchement statistique');
+  document.getElementById('dh-tag').textContent = zone === 'INCERTAIN' ? 'Vérification secondaire recommandée' : 'Décision automatique';
+
+  document.getElementById('sc-svm').textContent = d.svm_proba.toFixed(3);
+  const svmPct = Math.round(d.svm_proba * 100);
+  const gaugeSvm = document.getElementById('gauge-svm');
+  gaugeSvm.style.width = svmPct + '%';
+  gaugeSvm.style.background = zone === 'ACCEPTE' ? 'var(--success)' : zone === 'REJETE' ? 'var(--danger)' : 'var(--gold)';
+  document.getElementById('marker-tlow').style.left = Math.round(d.tlow * 100) + '%';
+  document.getElementById('marker-thigh').style.left = Math.round(d.thigh * 100) + '%';
+
+  document.getElementById('sc-cos').textContent = d.cos_score.toFixed(3);
+  const cosPct = Math.max(0, Math.min(100, Math.round((d.cos_score + 1) / 2 * 100)));
+  document.getElementById('gauge-cos').style.width = cosPct + '%';
+  const cosThresh = (typeof d.cos_threshold === 'number') ? d.cos_threshold : 0;
+  const cosAccess = d.cos_score >= cosThresh;
+  document.getElementById('cos-decision').textContent = cosAccess ? 'ACCÈS' : 'REFUS';
+  document.getElementById('marker-thresh').style.left = Math.round((cosThresh + 1) / 2 * 100) + '%';
+
+  document.getElementById('met-auc').textContent = d.auc;
+  document.getElementById('met-eer').textContent = d.eer;
+  document.getElementById('met-expected').textContent = d.expected;
+
+  const inOverlap = zone === 'INCERTAIN';
+  document.getElementById('overlap-note').innerHTML = inOverlap
+    ? `⚠️ <strong style="color:var(--cream)">Lecture :</strong> P(genuine) tombe dans la zone [Tlow, Thigh[ — exactement là où les distributions genuine/impostor se chevauchent statistiquement (Cellule 15). Le système suspend la décision automatique plutôt que de trancher silencieusement.`
+    : `💡 <strong style="color:var(--cream)">Lecture :</strong> cette image se situe loin du chevauchement statistique genuine/impostor — décision automatique fiable, hors zone d'ambiguïté.`;
+
+  // Dimension bars (top contributing dims of |e1-e2|)
+  const maxVal = Math.max(...d.top_dims.map(x => parseFloat(x.val)));
+  document.getElementById('dim-bars').innerHTML = d.top_dims.map(x => `
+    <div class="dim-row">
+      <div class="dim-name">${x.dim}</div>
+      <div class="dim-bar-wrap"><div class="dim-bar" style="width:${(parseFloat(x.val)/maxVal*100).toFixed(0)}%"></div></div>
+      <div class="dim-val">${x.val}</div>
+    </div>`).join('');
+
+  // Justif text comparing fixed vs svm
+  const agree = (cosAccess && zone === 'ACCEPTE') || (!cosAccess && zone === 'REJETE');
+  document.getElementById('justif-compare-text').innerHTML = agree
+    ? `Le seuil fixe (cosine = <strong style="color:var(--cream)">${d.cos_score.toFixed(3)}</strong> → ${cosAccess?'ACCÈS':'REFUS'}) et le SVM (P(genuine) = <strong style="color:var(--cream)">${d.svm_proba.toFixed(3)}</strong> → ${zone === 'ACCEPTE' ? 'ACCÈS' : zone === 'REJETE' ? 'REFUS' : 'INCERTAIN'}) s'accordent sur cette image — décision cohérente entre les deux approches.`
+    : `Le seuil fixe (cosine = <strong style="color:var(--cream)">${d.cos_score.toFixed(3)}</strong> → ${cosAccess?'ACCÈS':'REFUS'}) et le SVM (P(genuine) = <strong style="color:var(--cream)">${d.svm_proba.toFixed(3)}</strong> → ${zone === 'ACCEPTE' ? 'ACCÈS' : zone === 'REJETE' ? 'REFUS' : 'INCERTAIN'}) divergent. C'est exactement le cas démontré en Cellule 14 : le SVM peut convertir une décision binaire risquée en alerte explicite (INCERTAIN) plutôt que de reproduire silencieusement l'erreur.`;
+
+  document.getElementById('justif-zone-text').textContent = zone === 'ACCEPTE'
+    ? `P(genuine) = ${d.svm_proba.toFixed(3)} ≥ Thigh = ${d.thigh.toFixed(3)} — au-delà de la zone de chevauchement mesurée entre les distributions genuine/impostor (Cellule 15 du notebook). Décision automatique d'ACCÈS justifiée.`
+    : zone === 'REJETE'
+    ? `P(genuine) = ${d.svm_proba.toFixed(3)} < Tlow = ${d.tlow.toFixed(3)} — en dessous de la zone de chevauchement. Décision automatique de REFUS justifiée.`
+    : `P(genuine) = ${d.svm_proba.toFixed(3)} ∈ [Tlow=${d.tlow.toFixed(3)}, Thigh=${d.thigh.toFixed(3)}[ — exactement dans la zone où les distributions genuine/impostor se chevauchent statistiquement. La décision ACCÈS/REFUS est suspendue par construction.`;
+}
+
+function toggleJustif() {
+  document.getElementById('justif-box').classList.toggle('on');
+}
+</script>
+</body>
+</html>

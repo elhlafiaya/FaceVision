@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À Propos — FaceVision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body{background:var(--obsidian);color:var(--cream)}
+.about-hero{display:grid;grid-template-columns:1fr 1fr;min-height:70vh;padding-top:var(--nav-h);overflow:hidden}
+.about-hero-left{background:var(--obsidian);padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center;position:relative}
+.about-hero-left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 0% 50%,rgba(212,175,55,.05) 0%,transparent 70%)}
+.about-hero-right{background:var(--obsidian-mid);padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(212,175,55,.12);position:relative}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:1rem;position:relative;z-index:1}
+.about-title{font-family:var(--font-display);font-size:clamp(2.2rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.5rem;position:relative;z-index:1}
+.about-desc{font-size:14px;color:rgba(212,175,55,.55);line-height:1.9;position:relative;z-index:1;max-width:480px}
+.quote-block{font-family:var(--font-display);font-size:1.3rem;font-style:italic;color:var(--cream);line-height:1.6;border-left:3px solid var(--gold);padding-left:1.5rem}
+.quote-attr{font-family:var(--font-mono);font-size:11px;color:rgba(212,175,55,.4);margin-top:1rem;letter-spacing:1px}
+.section{padding:4rem;max-width:1300px;margin:0 auto}
+.sec-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:.8rem}
+.sec-title{font-family:var(--font-display);font-size:2.2rem;font-weight:700;margin-bottom:2rem}
+.objectives-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.obj-card{background:var(--obsidian-light);border-radius:16px;padding:2rem;border:1px solid rgba(212,175,55,.08)}
+.obj-num{font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--gold);opacity:.3;margin-bottom:.8rem}
+.obj-title{font-size:1.05rem;font-weight:700;margin-bottom:.6rem}
+.obj-desc{font-size:12.5px;color:rgba(212,175,55,.5);line-height:1.8}
+.divider-section{background:rgba(255,255,255,.015);border-top:1px solid rgba(212,175,55,.06);border-bottom:1px solid rgba(212,175,55,.06)}
+.tech-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:2rem}
+.tech-item{background:var(--obsidian-light);border-radius:12px;padding:1.3rem;border:1px solid rgba(212,175,55,.08);text-align:center}
+.tech-icon{font-size:1.6rem;margin-bottom:.5rem}
+.tech-name{font-size:12px;font-weight:700;margin-bottom:.2rem}
+.tech-desc{font-family:var(--font-mono);font-size:10px;color:rgba(212,175,55,.4)}
+.limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}
+.limit-card{background:rgba(199,91,91,.04);border:1px solid rgba(199,91,91,.15);border-radius:14px;padding:1.6rem}
+.limit-card.positive{background:rgba(76,175,124,.04);border-color:rgba(76,175,124,.15)}
+.limit-title{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem}
+.limit-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.limit-list li{font-size:12.5px;color:rgba(212,175,55,.55);line-height:1.6;padding-left:1.2rem;position:relative}
+.limit-list li::before{content:'•';position:absolute;left:0;color:var(--gold)}
+.perspectives-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2rem}
+.persp-card{background:var(--obsidian-light);border-radius:14px;padding:1.5rem;border:1px solid rgba(212,175,55,.08)}
+.persp-axis{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.persp-title{font-size:13px;font-weight:700;margin-bottom:.6rem}
+.persp-desc{font-size:11.5px;color:rgba(212,175,55,.5);line-height:1.7}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="index.html"><div class="nav-logo-icon">👁</div><div><span class="nav-logo-text">FaceVision</span><span class="nav-logo-sub">Biometric Platform</span></div></a>
+  <ul class="nav-links">
+    <li><a class="nav-link-btn" href="index.html">Accueil</a></li>
+    <li><a class="nav-link-btn" href="modeles.html">Modèles</a></li>
+    <li><a class="nav-link-btn" href="resultats.html">Résultats</a></li>
+    <li><a class="nav-link-btn" href="methodo.html">Méthodo</a></li>
+    <li><a class="nav-link-btn active-nav" href="apropos.html">À propos</a></li>
+    <li><a class="nav-cta" href="test.html">▶ Tester</a></li>
+  </ul>
+</nav>
+
+<div class="about-hero">
+  <div class="about-hero-left">
+    <div class="eyebrow">Positionnement du Projet</div>
+    <h1 class="about-title">Modéliser le<br>niveau de confiance,<br>pas la performance brute</h1>
+    <p class="about-desc">FaceVision ne vise pas à proposer une nouvelle méthode de reconnaissance faciale plus précise que l'état de l'art. FaceNet est utilisé tel quel, comme extracteur de caractéristiques figé. L'objectif est différent et complémentaire : introduire une modélisation explicite et calibrée du niveau de confiance dans la décision de vérification.</p>
+  </div>
+  <div class="about-hero-right">
+    <div class="quote-block">"Améliorer la prise de décision d'un système de vérification faciale en y introduisant une modélisation explicite et calibrée du niveau de confiance, plutôt que de chercher un gain de performance brute sur des métriques déjà proches de la saturation."</div>
+    <div class="quote-attr">— Positionnement scientifique, Cellule 19 du notebook</div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="sec-eyebrow">Contribution</div>
+  <h2 class="sec-title">Trois niveaux de contribution</h2>
+  <div class="objectives-grid">
+    <div class="obj-card">
+      <div class="obj-num">01</div>
+      <div class="obj-title">Méthodologique</div>
+      <div class="obj-desc">Transformer une similarité cosine non calibrée en une probabilité P(genuine) interprétable, via apprentissage supervisé (SVM RBF sur |e₁−e₂| ∈ ℝ⁵¹²) et calibration Platt, validée empiriquement (reliability diagram + Brier/ECE).</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-num">02</div>
+      <div class="obj-title">Décisionnel</div>
+      <div class="obj-desc">Remplacer une règle de décision binaire rigide par une règle ternaire (Accepté / Incertain / Rejeté), dont la zone intermédiaire coïncide avec la zone réelle de chevauchement statistique des distributions, et absorbe une partie des erreurs qu'aurait commises silencieusement la baseline.</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-num">03</div>
+      <div class="obj-title">Évaluation</div>
+      <div class="obj-desc">Ne pas se limiter à AUC/EER (quasi-égalité des deux systèmes), mais évaluer la qualité de la confiance elle-même via Brier Score et ECE — ce que les métriques de performance pure ne mesurent pas, et la vraie valeur ajoutée de ce travail.</div>
+    </div>
+  </div>
+</section>
+
+<section class="divider-section">
+  <div class="section">
+    <div class="sec-eyebrow">Stack Technique</div>
+    <h2 class="sec-title">Technologies utilisées</h2>
+    <div class="tech-grid">
+      <div class="tech-item"><div class="tech-icon">🧬</div><div class="tech-name">FaceNet</div><div class="tech-desc">InceptionResnetV1 VGGFace2</div></div>
+      <div class="tech-item"><div class="tech-icon">🎯</div><div class="tech-name">MTCNN</div><div class="tech-desc">facenet-pytorch</div></div>
+      <div class="tech-item"><div class="tech-icon">⚡</div><div class="tech-name">SVM RBF</div><div class="tech-desc">scikit-learn SVC</div></div>
+      <div class="tech-item"><div class="tech-icon">📊</div><div class="tech-name">Calibration Platt</div><div class="tech-desc">CalibratedClassifierCV</div></div>
+      <div class="tech-item"><div class="tech-icon">🔧</div><div class="tech-name">OpenCV</div><div class="tech-desc">CLAHE, prétraitement</div></div>
+      <div class="tech-item"><div class="tech-icon">🐍</div><div class="tech-name">PyTorch</div><div class="tech-desc">Backend FaceNet</div></div>
+      <div class="tech-item"><div class="tech-icon">🌐</div><div class="tech-name">Flask</div><div class="tech-desc">API + serveur web</div></div>
+      <div class="tech-item"><div class="tech-icon">📐</div><div class="tech-name">NumPy / Pandas</div><div class="tech-desc">Calcul scientifique</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="sec-eyebrow">Honnêteté Scientifique</div>
+  <h2 class="sec-title">Limites assumées & forces du système</h2>
+  <div class="limit-grid">
+    <div class="limit-card">
+      <div class="limit-title" style="color:var(--danger)">⚠ Limites</div>
+      <ul class="limit-list">
+        <li>AUC du SVM quasi-identique à la baseline (ORL : 0.9995 SVM vs 0.9996 seuil fixe ; Yale : 1.0000 = 1.0000) — écart négligeable, FaceNet est déjà quasi-parfait sur ces bases</li>
+        <li>ORL et Yale sont des bases "faciles" : visages frontaux, environnement contrôlé, peu de sujets (40 et 15)</li>
+        <li>Yale : 770 paires de test (7 sujets test) — échantillon modeste, intervalles de confiance bootstrap recommandés</li>
+        <li>Pas de variations réelles (poses, occlusions, conditions hétérogènes type LFW/VGGFace2)</li>
+      </ul>
+    </div>
+    <div class="limit-card positive">
+      <div class="limit-title" style="color:var(--success)">✓ Forces</div>
+      <ul class="limit-list">
+        <li>P(genuine) réellement calibré et interprétable (validé par ECE & Brier Score)</li>
+        <li>Zone d'incertitude ancrée sur le chevauchement statistique réel, pas arbitraire</li>
+        <li>Erreurs silencieuses de la baseline converties en alertes explicites (démontré paire par paire)</li>
+        <li>Méthodologie transposable à des conditions réelles plus difficiles, où la marge sera plus étroite</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="divider-section">
+  <div class="section">
+    <div class="sec-eyebrow">Travaux Futurs</div>
+    <h2 class="sec-title">Perspectives</h2>
+    <div class="perspectives-grid">
+      <div class="persp-card"><div class="persp-axis">Axe 1</div><div class="persp-title">Modèles end-to-end</div><div class="persp-desc">ArcFace / CosFace avec perte angulaire pour maximiser la marge inter-classe dans l'espace des embeddings.</div></div>
+      <div class="persp-card"><div class="persp-axis">Axe 2</div><div class="persp-title">Confiance bayésienne</div><div class="persp-desc">Remplacer la calibration Platt par un modèle bayésien (Gaussian Process) pour quantifier l'incertitude épistémique vs aléatoire.</div></div>
+      <div class="persp-card"><div class="persp-axis">Axe 3</div><div class="persp-title">XAI — SHAP</div><div class="persp-desc">SHAP values sur les 512 dimensions de |e₁−e₂| pour identifier les régions du visage les plus discriminantes dans les cas incertains.</div></div>
+      <div class="persp-card"><div class="persp-axis">Axe 4</div><div class="persp-title">Robustesse & Adversarial</div><div class="persp-desc">Tester la résistance aux attaques de présentation (visages imprimés, deepfakes).</div></div>
+      <div class="persp-card"><div class="persp-axis">Axe 5</div><div class="persp-title">Calibration adaptative</div><div class="persp-desc">Mettre à jour les paramètres A, B de la sigmoid en ligne selon les retours utilisateur.</div></div>
+      <div class="persp-card"><div class="persp-axis">Axe 6</div><div class="persp-title">Données réelles</div><div class="persp-desc">Valider sur LFW ou VGGFace2 avec variations intra-classe réelles pour confirmer la généralisation.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid rgba(212,175,55,.08);padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center">
+  <div style="font-family:var(--font-mono);font-size:11px;color:rgba(212,175,55,.3)">FaceVision — SVM RBF |e₁−e₂| 512D · Calibration Platt · ISO/IEC 19795-1</div>
+  <a href="test.html" style="color:var(--gold);text-decoration:none;font-size:12px;font-weight:600">Tester la plateforme →</a>
+</footer>
+</body>
+</html>
